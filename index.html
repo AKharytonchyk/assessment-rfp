@@ -872,25 +872,30 @@
     vertical-align: middle;
   }
 
-  /* ── Agenda — columned index ────────────────────────────────────────────── */
+  /* ── Agenda — columned index, top-to-bottom column flow ────────────────── */
+  /* 30 items laid out in 3 columns of 10, filling column-first (reads naturally
+     as column 1: 01..10, column 2: 11..20, column 3: 21..30). */
   .agenda-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 0 36px;
+    grid-template-rows: repeat(10, minmax(0, auto));
+    grid-auto-flow: column;
+    gap: 0 40px;
     flex: 1;
     align-content: center;
   }
   .agenda-grid .item {
     font-family: var(--fs-body);
-    font-size: 13.5px;
-    padding: 11px 0;
+    font-size: 13px;
+    padding: 8px 0;
     border-left: none;
     border-bottom: 1px solid var(--line);
     display: flex;
     align-items: baseline;
-    gap: 16px;
+    gap: 14px;
     color: var(--snow);
     transition: border-color 220ms ease, color 180ms ease;
+    line-height: 1.3;
   }
   .agenda-grid .item:hover {
     border-bottom-color: var(--sea);
@@ -901,8 +906,9 @@
     font-family: var(--fs-mono);
     font-size: 10px;
     font-weight: 500;
-    letter-spacing: 0.14em;
-    min-width: 24px;
+    letter-spacing: 0.12em;
+    font-variant-numeric: tabular-nums;
+    min-width: 22px;
     margin-right: 0;
   }
 
@@ -1283,30 +1289,36 @@
 <section>
   <h2>Agenda</h2>
   <div class="agenda-grid">
-    <div class="item"><span class="num">1</span>About Us & Experience</div>
-    <div class="item"><span class="num">2</span>Cloud Stack Alignment</div>
-    <div class="item"><span class="num">3</span>Understanding Requirements</div>
-    <div class="item"><span class="num">4</span>Business Outcomes & KPIs</div>
-    <div class="item"><span class="num">5</span>Pipeline Prioritization</div>
-    <div class="item"><span class="num">6</span>Architecture Decisions (14 ADRs)</div>
-    <div class="item"><span class="num">7</span>Solution Architecture</div>
-    <div class="item"><span class="num">8</span>Geo-Data Specialization</div>
-    <div class="item"><span class="num">9</span>Data Governance & Mesh</div>
-    <div class="item"><span class="num">10</span>Data Quality Framework</div>
-    <div class="item"><span class="num">11</span>Monitoring & Observability</div>
-    <div class="item"><span class="num">12</span>NFRs & SLOs</div>
-    <div class="item"><span class="num">13</span>AI Acceleration</div>
-    <div class="item"><span class="num">14</span>CI/CD & DevOps</div>
-    <div class="item"><span class="num">15</span>Security & Access Control</div>
-    <div class="item"><span class="num">16</span>End-to-End User Journey</div>
-    <div class="item"><span class="num">17</span>MVP / Thin-Slice Strategy</div>
-    <div class="item"><span class="num">18</span>Delivery Approach & Roadmap</div>
-    <div class="item"><span class="num">19</span>Team & Resource Plan</div>
-    <div class="item"><span class="num">20</span>Risk Management</div>
-    <div class="item"><span class="num">21</span>ROM Financial Proposal</div>
-    <div class="item"><span class="num">22</span>Assumptions & Dependencies</div>
-    <div class="item"><span class="num">23</span>Migration & Adoption</div>
-    <div class="item"><span class="num">24</span>References · Q&amp;A</div>
+    <div class="item"><span class="num">01</span>About Us &amp; Experience</div>
+    <div class="item"><span class="num">02</span>Cloud Stack Alignment</div>
+    <div class="item"><span class="num">03</span>Understanding Requirements</div>
+    <div class="item"><span class="num">04</span>Business Outcomes &amp; KPIs</div>
+    <div class="item"><span class="num">05</span>Pipeline Prioritization</div>
+    <div class="item"><span class="num">06</span>Architecture Decisions (14 ADRs)</div>
+    <div class="item"><span class="num">07</span>Solution Architecture (C4)</div>
+    <div class="item"><span class="num">08</span>Domain Template</div>
+    <div class="item"><span class="num">09</span>Medallion · Iceberg · Geo</div>
+    <div class="item"><span class="num">10</span>Data Governance &amp; Mesh</div>
+    <div class="item"><span class="num">11</span>Data Quality Framework</div>
+    <div class="item"><span class="num">12</span>Monitoring &amp; Observability</div>
+    <div class="item"><span class="num">13</span>NFRs &amp; SLOs</div>
+    <div class="item"><span class="num">14</span>AI Acceleration</div>
+    <div class="item"><span class="num">15</span>CI/CD &amp; DevOps</div>
+    <div class="item"><span class="num">16</span>Data Contract CI Gate</div>
+    <div class="item"><span class="num">17</span>Security &amp; Access Control</div>
+    <div class="item"><span class="num">18</span>End-to-End User Journey</div>
+    <div class="item"><span class="num">19</span>MVP / Thin-Slice Strategy</div>
+    <div class="item"><span class="num">20</span>Delivery Approach</div>
+    <div class="item"><span class="num">21</span>Roadmap &amp; Critical Path</div>
+    <div class="item"><span class="num">22</span>Team &amp; Resource Plan</div>
+    <div class="item"><span class="num">23</span>Risk Management</div>
+    <div class="item"><span class="num">24</span>ROM Financial Proposal</div>
+    <div class="item"><span class="num">25</span>Assumptions &amp; Dependencies</div>
+    <div class="item"><span class="num">26</span>Migration Strategy</div>
+    <div class="item"><span class="num">27</span>Adoption Plan</div>
+    <div class="item"><span class="num">28</span>Why EPAM</div>
+    <div class="item"><span class="num">29</span>References · Q&amp;A</div>
+    <div class="item"><span class="num">30</span>Appendix B · Microsoft refs</div>
   </div>
 </section>
 
