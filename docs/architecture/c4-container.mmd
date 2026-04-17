@@ -1,0 +1,90 @@
+---
+title: "EDP - C4 Container Diagram (AWS)"
+---
+C4Container
+    title Enterprise Data Platform - Container Diagram (AWS Services)
+
+    Person(analyst, "Data Analyst", "Queries data")
+    Person(engineer, "Data Engineer", "Builds pipelines")
+    Person(admin, "Platform Admin", "Monitors & manages")
+
+    System_Boundary(aws, "AWS Cloud") {
+
+        Container_Boundary(ingestion, "Ingestion Layer") {
+            Container(glue_ingest, "AWS Glue Jobs", "Python/PySpark", "Extracts data from sources, lands in Bronze tier")
+            Container(lambda_ingest, "Lambda Functions", "Python", "Lightweight API connectors, file processors")
+            Container(sfn, "Step Functions", "ASL/JSON", "Orchestrates pipeline stages: ingest -> transform -> publish")
+        }
+
+        Container_Boundary(storage, "Storage Layer (Medallion)") {
+            ContainerDb(s3_bronze, "S3 Bronze (Raw)", "Parquet/JSON/CSV", "Faithful source copy, partitioned by date")
+            ContainerDb(s3_silver, "S3 Silver (Curated)", "Parquet", "Cleansed, typed, deduplicated, normalized")
+            ContainerDb(s3_gold, "S3 Gold (Published)", "Parquet", "Business-ready aggregates, enriched, cross-domain joins")
+            ContainerDb(glue_catalog, "Glue Data Catalog", "Hive Metastore", "Schema registry, table metadata, classification tags")
+        }
+
+        Container_Boundary(query, "Query & Analytics Layer") {
+            Container(athena, "Amazon Athena", "SQL", "Serverless queries on S3 via Glue Catalog")
+            Container(redshift, "Redshift Serverless", "SQL", "High-performance analytical queries, materialized views")
+        }
+
+        Container_Boundary(quality, "Data Quality Layer") {
+            Container(gx, "Great Expectations", "Python on Glue/Lambda", "DQ checks: completeness, accuracy, timeliness")
+            ContainerDb(dq_store, "DQ Results Store", "S3 + DynamoDB", "Historical DQ scores, trend data")
+        }
+
+        Container_Boundary(monitoring, "Monitoring & Observability") {
+            Container(react_app, "Monitoring Dashboard", "React + TypeScript", "Pipeline status, DQ scores, cross-domain hub, lineage DAG")
+            Container(api_gw, "API Gateway + Lambda", "FastAPI/Python", "REST API for dashboard data, Cognito auth")
+            Container(cloudwatch, "CloudWatch", "Metrics + Logs + Alarms", "Custom metrics, structured logs, composite alarms")
+            Container(xray, "AWS X-Ray", "Tracing", "Distributed traces across Lambda, Step Functions, API GW")
+            Container(grafana, "Grafana Dashboards", "Grafana", "Ops dashboards: Glue DPU, Lambda, S3, Redshift metrics")
+            Container(eventbridge, "EventBridge", "Event Bus", "Pipeline events, agent triggers, cross-service routing")
+            Container(sns, "SNS", "Pub/Sub", "Alert fan-out to email, Slack, PagerDuty")
+        }
+
+        Container_Boundary(security, "Security & Governance") {
+            Container(lake_formation, "Lake Formation", "Permissions", "Table/column-level access, cross-domain grants")
+            Container(iam, "IAM + SSO", "RBAC", "Role-based access: DomainAdmin, DataEngineer, Analyst, MonitoringRO")
+            Container(kms, "KMS", "Encryption", "CMKs for data at rest, per-environment keys")
+            Container(cloudtrail, "CloudTrail", "Audit", "API audit logs, data events, S3 access logging")
+        }
+
+        Container_Boundary(cicd, "CI/CD & AI Agents") {
+            Container(gh_actions, "GitHub Actions", "YAML Workflows", "Terraform CI/CD, Python CI/CD, React CI/CD, env promotion")
+            Container(codebuild, "AWS CodeBuild", "Agent Runtime", "Isolated execution for AI agents (Claude Code)")
+            Container(bedrock, "Amazon Bedrock", "LLM Inference", "Sonnet/Haiku via Application Inference Profiles")
+            ContainerDb(agent_store, "DynamoDB", "Event Store", "Agent orchestration events, execution tracking")
+        }
+    }
+
+    System_Ext(sources, "Source Systems", "CRM, ERP, HRIS, Files")
+    System_Ext(bi_tools, "BI & Analytics", "QuickSight, Tableau, Power BI")
+    System_Ext(github, "GitHub", "Source code, PRs, Actions")
+
+    Rel(sources, glue_ingest, "Raw data extraction")
+    Rel(sources, lambda_ingest, "API/file ingestion")
+    Rel(sfn, glue_ingest, "Orchestrates")
+    Rel(sfn, gx, "Runs DQ checks between stages")
+    Rel(glue_ingest, s3_bronze, "Writes raw data")
+    Rel(glue_ingest, s3_silver, "Transforms to curated")
+    Rel(glue_ingest, s3_gold, "Publishes business-ready")
+    Rel(glue_catalog, s3_bronze, "Catalogs")
+    Rel(glue_catalog, s3_silver, "Catalogs")
+    Rel(glue_catalog, s3_gold, "Catalogs")
+    Rel(athena, glue_catalog, "Queries via catalog")
+    Rel(redshift, s3_gold, "Loads published data")
+    Rel(gx, dq_store, "Stores results")
+    Rel(react_app, api_gw, "Fetches data")
+    Rel(api_gw, dq_store, "Reads DQ scores")
+    Rel(api_gw, agent_store, "Reads pipeline executions")
+    Rel(sfn, eventbridge, "Emits pipeline events")
+    Rel(cloudwatch, sns, "Triggers alerts")
+    Rel(analyst, athena, "SQL queries")
+    Rel(analyst, react_app, "Views dashboards")
+    Rel(engineer, github, "Pushes code")
+    Rel(github, gh_actions, "Triggers workflows")
+    Rel(gh_actions, codebuild, "Triggers AI agents")
+    Rel(codebuild, bedrock, "LLM inference")
+    Rel(bi_tools, redshift, "Connects for reporting")
+    Rel(lake_formation, glue_catalog, "Governs access")

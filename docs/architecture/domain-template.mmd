@@ -1,0 +1,64 @@
+---
+title: "Reusable Domain Template - Terraform Module"
+---
+flowchart TB
+    subgraph terraform["Terraform Module: domain-template"]
+        direction TB
+        input["Input Variables<br/>domain_name: string<br/>environment: dev|tst|prd<br/>kms_key_arn: string<br/>vpc_id: string<br/>subnet_ids: list"]
+    end
+
+    input --> s3
+    input --> glue
+    input --> sfn
+    input --> query
+    input --> iam
+    input --> monitoring
+
+    subgraph s3["S3 Data Lake Buckets"]
+        s3_raw["edp-{domain}-{env}-raw<br/>SSE-KMS, versioning<br/>lifecycle: 90d -> Glacier"]
+        s3_curated["edp-{domain}-{env}-curated<br/>SSE-KMS, versioning<br/>lifecycle: 1yr -> Glacier"]
+        s3_published["edp-{domain}-{env}-published<br/>SSE-KMS, versioning<br/>lifecycle: 3yr archive"]
+    end
+
+    subgraph glue["Glue Data Catalog"]
+        glue_raw["DB: edp_{domain}_{env}_raw"]
+        glue_curated["DB: edp_{domain}_{env}_curated"]
+        glue_published["DB: edp_{domain}_{env}_published"]
+        crawler["Glue Crawler<br/>IAM role scoped to domain buckets"]
+    end
+
+    subgraph sfn["Step Functions"]
+        state_machine["Pipeline Orchestrator<br/>edp-{domain}-pipeline-{entity}<br/>Parameterized skeleton:<br/>Ingest -> DQ Check -> Transform -> DQ Check -> Publish"]
+    end
+
+    subgraph query["Query Engine"]
+        athena_wg["Athena Workgroup<br/>edp-{domain}-{env}<br/>Byte-scan limit per query<br/>Result location: S3"]
+        redshift_ns["Redshift Serverless<br/>Namespace + Workgroup<br/>RPU limits configured"]
+    end
+
+    subgraph iam["IAM & Lake Formation"]
+        role_admin["Role: edp-domain-admin-{domain}-{env}<br/>Full access to domain resources"]
+        role_engineer["Role: edp-data-engineer-{domain}-{env}<br/>Read/write Bronze & Silver, read Gold"]
+        role_analyst["Role: edp-data-analyst-{domain}-{env}<br/>Read-only Gold tier"]
+        role_pipeline["Role: edp-pipeline-exec-{domain}-{env}<br/>Glue, Lambda, Step Functions execution"]
+        lf_perms["Lake Formation Permissions<br/>Table-level per role<br/>Column-level for PII"]
+    end
+
+    subgraph monitoring["Monitoring"]
+        cw_namespace["CloudWatch Namespace<br/>EDP/{Domain}/{Env}"]
+        cw_logs["Log Group<br/>/edp/{domain}/{env}"]
+        sns_topic["SNS Topic<br/>edp-{domain}-{env}-alerts"]
+        eb_rule["EventBridge Rule<br/>Pipeline state changes -> centralized bus"]
+    end
+
+    s3_raw --> glue_raw
+    s3_curated --> glue_curated
+    s3_published --> glue_published
+
+    style terraform fill:#2d6a4f,color:#fff
+    style s3 fill:#1a73e8,color:#fff
+    style glue fill:#e67700,color:#fff
+    style sfn fill:#6b21a8,color:#fff
+    style query fill:#b91c1c,color:#fff
+    style iam fill:#4a5568,color:#fff
+    style monitoring fill:#065f46,color:#fff

@@ -1,0 +1,68 @@
+@startuml c4-container
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_WITH_LEGEND()
+LAYOUT_TOP_DOWN()
+
+title Enterprise Data Platform - Container Diagram (AWS Services)
+
+Person(analyst, "Data Analyst", "Queries published data")
+Person(engineer, "Data Engineer", "Builds pipelines")
+
+System_Ext(sources, "Source Systems", "CRM, ERP, HRIS, CSV/Excel")
+System_Ext(bi_tools, "BI Tools", "QuickSight, Tableau")
+System_Ext(github, "GitHub", "Code, PRs, Actions")
+
+System_Boundary(aws, "AWS Cloud - Enterprise Data Platform") {
+
+    Container(sfn, "Step Functions", "ASL", "Orchestrates pipeline stages")
+    Container(glue, "AWS Glue Jobs", "Python/PySpark", "Ingestion & transformation")
+    Container(lambda, "Lambda Functions", "Python", "Connectors, DQ checks, API handlers")
+
+    ContainerDb(s3_raw, "S3 Bronze", "Raw", "Source-native data copy")
+    ContainerDb(s3_curated, "S3 Silver", "Curated", "Cleansed, normalized")
+    ContainerDb(s3_gold, "S3 Gold", "Published", "Business-ready aggregates")
+    ContainerDb(catalog, "Glue Catalog", "Metadata", "Schema registry, classifications")
+
+    Container(athena, "Athena", "SQL", "Serverless queries")
+    Container(redshift, "Redshift Serverless", "SQL", "Analytical queries")
+
+    Container(gx, "Great Expectations", "Python", "Data quality checks")
+
+    Container(react_app, "Monitoring Dashboard", "React/TS", "Pipeline status, DQ scores, lineage")
+    Container(api, "Monitoring API", "FastAPI", "REST API + Cognito auth")
+    Container(cloudwatch, "CloudWatch", "Observability", "Metrics, logs, alarms, X-Ray")
+    Container(sns, "SNS + EventBridge", "Events", "Alerts, pipeline events")
+
+    Container(lake_formation, "Lake Formation + IAM", "Security", "RBAC, column-level access, KMS")
+    Container(gh_actions, "GitHub Actions", "CI/CD", "Build, test, deploy pipelines")
+    Container(agents, "AI Agents", "CodeBuild + Bedrock", "Automated PR review, pipeline generation")
+}
+
+Rel_D(sources, glue, "Raw data")
+Rel_D(sfn, glue, "Orchestrates")
+Rel_D(sfn, gx, "Runs DQ gates")
+
+Rel_D(glue, s3_raw, "Writes")
+Rel_D(glue, s3_curated, "Transforms")
+Rel_D(glue, s3_gold, "Publishes")
+Rel_R(catalog, s3_raw, "Catalogs")
+Rel_R(catalog, s3_curated, "Catalogs")
+Rel_R(catalog, s3_gold, "Catalogs")
+
+Rel_D(athena, catalog, "Queries")
+Rel_D(redshift, s3_gold, "Loads")
+Rel_D(bi_tools, redshift, "Connects")
+
+Rel_D(react_app, api, "Fetches data")
+Rel_D(sfn, sns, "Emits events")
+Rel_D(cloudwatch, sns, "Triggers alerts")
+
+Rel_D(analyst, athena, "SQL queries")
+Rel_D(analyst, react_app, "Views dashboards")
+Rel_D(engineer, github, "Pushes code")
+Rel_D(github, gh_actions, "Triggers")
+Rel_D(gh_actions, agents, "Invokes")
+Rel_D(lake_formation, catalog, "Governs")
+
+@enduml

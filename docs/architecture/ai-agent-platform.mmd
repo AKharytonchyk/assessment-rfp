@@ -1,0 +1,79 @@
+---
+title: "AI Agent Platform Architecture"
+---
+flowchart TB
+    subgraph triggers["Trigger Layer"]
+        gh_webhook["GitHub Webhook<br/>(PR events)"]
+        manual["Manual Trigger<br/>(CLI / API Gateway)"]
+        schedule["EventBridge Schedule<br/>(weekly scans)"]
+    end
+
+    subgraph foundation["Foundation Agent Stack (CDK)"]
+        start_lambda["Start Lambda<br/>- Validate input<br/>- Resolve agent from registry<br/>- Check guardrails<br/>- Start CodeBuild"]
+
+        subgraph registry["Agent Registry"]
+            pipeline_gen["pipeline-generator<br/>Generates Glue jobs, SFn,<br/>DQ suites from spec"]
+            pr_reviewer["pr-reviewer<br/>Multi-pass: security,<br/>quality, architecture, cost"]
+            test_gen["test-generator<br/>pytest fixtures, moto mocks,<br/>synthetic test data"]
+            doc_gen["doc-generator<br/>Auto-generate pipeline docs,<br/>data dictionaries"]
+            tf_reviewer["terraform-reviewer<br/>checkov, cost estimation,<br/>best practices"]
+            schema_val["schema-validator<br/>Validate Glue Catalog<br/>schema changes"]
+            dq_tuner["dq-tuner<br/>Analyze DQ history,<br/>suggest threshold adjustments"]
+        end
+
+        subgraph codebuild["AWS CodeBuild (Isolated Execution)"]
+            cb_env["Environment:<br/>- Clone repo<br/>- Install Claude CLI<br/>- Write permissions (.claude/settings.local.json)"]
+            cb_run["Execute:<br/>claude -p [prompt] [args]<br/>Scoped permissions (allow/deny)"]
+            cb_output["Output:<br/>- Git commit + push<br/>- Create PR (gh cli)<br/>- Post review comments"]
+        end
+
+        bedrock["Amazon Bedrock<br/>Application Inference Profile<br/>claude-sonnet-4-6 (default)<br/>claude-haiku-4-5 (dedup/fast)"]
+    end
+
+    subgraph orchestrator["Orchestrator (Event-Sourced Saga)"]
+        dynamo["DynamoDB Event Store<br/>PK: orchestrationId<br/>SK: eventTime<br/>CONTEXT record (source of truth)<br/>TTL: 90 days"]
+
+        subgraph saga["Saga State Machine"]
+            s1["GENERATING"] --> s2["REVIEWING"]
+            s2 -->|"Issues found"| s3["FIXING"]
+            s3 -->|"Max 3 attempts"| s2
+            s2 -->|"Approved"| s4["WAITING_FOR_CI"]
+            s4 -->|"CI pass"| s5["COMPLETED"]
+            s4 -->|"CI fail"| s3
+            s3 -->|"Max retries exceeded"| s6["NEEDS_REVIEW<br/>(human escalation)"]
+        end
+
+        reducer["Pure Reducer<br/>(state, action, context)<br/>-> (nextState, effects[])<br/>No I/O, fully testable"]
+
+        effects["Effects Executor<br/>INVOKE_AGENT | CREATE_PR<br/>REVIEW_PR | POST_REVIEW<br/>FETCH_CI_LOGS | PUT_EVENT"]
+    end
+
+    subgraph guardrails["Guardrails"]
+        max_retry["Max 3 fix attempts"]
+        dedup_check["Duplicate prevention<br/>(same repo + branch)"]
+        timeout["CodeBuild: 30 min<br/>Claude Code: 25 min"]
+        rate_limit["API: 20 req/day"]
+        input_val["Input validation<br/>regex + shell metachar blocklist"]
+        env_whitelist["Env var whitelist<br/>(ALLOWED_FIELDS only)"]
+    end
+
+    triggers --> start_lambda
+    start_lambda --> registry
+    registry --> codebuild
+    codebuild --> bedrock
+    codebuild -->|"Events"| dynamo
+    dynamo --> reducer
+    reducer --> effects
+    effects -->|"INVOKE_AGENT"| start_lambda
+    effects -->|"CREATE_PR / REVIEW_PR"| gh_webhook
+
+    guardrails -.->|"Enforced at"| start_lambda
+    guardrails -.->|"Enforced at"| codebuild
+
+    style triggers fill:#6b7280,color:#fff
+    style foundation fill:#1a73e8,color:#fff
+    style registry fill:#2d6a4f,color:#fff
+    style codebuild fill:#b45309,color:#fff
+    style orchestrator fill:#6b21a8,color:#fff
+    style saga fill:#7c3aed,color:#fff
+    style guardrails fill:#b91c1c,color:#fff

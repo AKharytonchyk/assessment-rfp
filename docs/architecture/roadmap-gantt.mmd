@@ -1,0 +1,68 @@
+---
+title: "EDP Delivery Roadmap - 16 Weeks"
+---
+gantt
+    title Enterprise Data Platform - Delivery Roadmap
+    dateFormat YYYY-MM-DD
+    axisFormat %b %d
+
+    section Phase 0: Discovery
+    Stakeholder interviews & source inventory    :crit, p0_1, 2026-05-04, 5d
+    Domain selection & pipeline assignment        :crit, p0_2, 2026-05-04, 10d
+    Medallion architecture & naming standards     :p0_3, 2026-05-04, 10d
+    Technology confirmation & ADRs                :p0_4, 2026-05-04, 10d
+    Repo setup & branching strategy               :p0_5, 2026-05-11, 5d
+    Data ownership matrix & RACI                  :p0_6, 2026-05-11, 5d
+
+    section Phase 1: Platform Foundation
+    VPC, networking, VPC endpoints                :p1_1, 2026-05-18, 5d
+    S3 domain templates + KMS                     :p1_2, 2026-05-18, 10d
+    Glue catalog + query engine templates         :p1_3, 2026-05-25, 5d
+    RBAC + Lake Formation                         :p1_4, 2026-05-25, 5d
+    Step Functions template + monitoring infra    :p1_5, 2026-06-01, 5d
+    edp_common Python library                     :crit, p1_6, 2026-05-18, 15d
+    Terraform CI/CD workflow                      :p1_7, 2026-06-01, 5d
+    Python + React CI/CD workflows                :p1_8, 2026-06-08, 5d
+    Secrets (OIDC) + env promotion                :p1_9, 2026-06-08, 5d
+    AI Agent Foundation Stack                     :p1_10, 2026-06-01, 10d
+    Structured logging + X-Ray                    :p1_11, 2026-05-18, 10d
+    Cost tagging + Budgets                        :p1_12, 2026-06-08, 5d
+
+    section Phase 2: Domain 1 Pipelines
+    Reference pipeline (Pipeline 1)               :crit, p2_1, 2026-06-01, 10d
+    DQ framework setup (GX)                       :p2_2, 2026-06-01, 10d
+    Data contracts + catalog population           :p2_3, 2026-06-01, 10d
+    Pipelines 2-3 + accuracy DQ                   :p2_4, 2026-06-15, 5d
+    Pipelines 4-5 + timeliness DQ                 :p2_5, 2026-06-22, 5d
+    DQ results store + pipeline config            :p2_6, 2026-06-29, 5d
+    Domain 1 integration testing + TST promotion  :p2_7, 2026-07-06, 5d
+    Monitoring API + pipeline dashboard           :p2_8, 2026-06-15, 20d
+    SLO/SLA definitions                           :p2_9, 2026-06-29, 5d
+
+    section Phase 3: Domain 2 + Monitoring
+    Domain 2 provisioning + Pipelines 6-7         :p3_1, 2026-06-29, 10d
+    Pipelines 8-10 + cross-domain linkages        :crit, p3_2, 2026-07-13, 10d
+    DQ dashboard + cross-domain hub               :p3_3, 2026-07-20, 10d
+    Alerting rules + Grafana dashboards           :p3_4, 2026-07-27, 5d
+    Data lineage tracking                         :p3_5, 2026-07-20, 10d
+    Centralized log aggregation                   :p3_6, 2026-06-29, 10d
+    Runbook automation                            :p3_7, 2026-07-27, 5d
+    Full integration testing + TST/PRD promotion  :p3_8, 2026-08-03, 5d
+
+    section Phase 4: Handoff
+    Security hardening (SEC-001 to SEC-005)       :p4_1, 2026-07-27, 10d
+    PRD deployment + smoke testing                :crit, p4_2, 2026-08-03, 5d
+    Documentation completion                      :p4_3, 2026-08-10, 5d
+    Operating model guidance                      :p4_4, 2026-08-10, 5d
+    Migration plan for remaining pipelines        :p4_5, 2026-08-10, 5d
+    Training Session 1: Platform & IaC            :p4_6, 2026-08-17, 2d
+    Training Session 2: Pipeline Development      :p4_7, 2026-08-19, 2d
+    Training Session 3: Monitoring & Operations   :p4_8, 2026-08-21, 1d
+    Formal handoff sign-off                       :milestone, p4_9, 2026-08-21, 0d
+
+    section Team Ramp
+    DM + Architect + Platform Eng + DE1           :active, t1, 2026-05-04, 80d
+    Data Engineer 2 joins                         :t2, 2026-05-18, 50d
+    Full-Stack + QA join                          :t3, 2026-06-01, 60d
+    Architect rolls off                           :t4, 2026-08-07, 0d
+    Tech Writer joins                             :t5, 2026-07-27, 20d

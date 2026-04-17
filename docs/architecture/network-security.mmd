@@ -1,0 +1,81 @@
+---
+title: "Network & Security Architecture"
+---
+flowchart TB
+    subgraph aws_org["AWS Organization"]
+        subgraph mgmt["Management Account"]
+            sso["AWS SSO / Identity Center"]
+            cloudtrail_org["Organization CloudTrail"]
+            scp["Service Control Policies"]
+        end
+
+        subgraph dev_account["DEV Account"]
+            subgraph vpc_dev["VPC: edp-dev (10.0.0.0/16)"]
+                subgraph private_dev["Private Subnets"]
+                    glue_dev["Glue Jobs<br/>(ENI in VPC)"]
+                    lambda_dev["Lambda Functions<br/>(VPC-attached)"]
+                    redshift_dev["Redshift Serverless<br/>(VPC endpoint)"]
+                end
+                subgraph vpce_dev["VPC Endpoints (Private Link)"]
+                    s3_vpce["S3 Gateway Endpoint"]
+                    glue_vpce["Glue Interface Endpoint"]
+                    sm_vpce["Secrets Manager Endpoint"]
+                    cw_vpce["CloudWatch Endpoint"]
+                    sfn_vpce["Step Functions Endpoint"]
+                end
+                nat_dev["NAT Gateway<br/>(outbound only: API sources)"]
+            end
+        end
+
+        subgraph tst_account["TST Account"]
+            vpc_tst_box["VPC: edp-tst<br/>(same structure as DEV)"]
+        end
+
+        subgraph prd_account["PRD Account"]
+            vpc_prd_box["VPC: edp-prd<br/>(same structure as DEV)"]
+        end
+
+        subgraph shared_services["Shared Services"]
+            kms_keys["KMS CMKs<br/>- edp-dev-key<br/>- edp-tst-key<br/>- edp-prd-key"]
+            lake_formation["Lake Formation<br/>- Table-level permissions<br/>- Column-level PII masking<br/>- Cross-domain grants"]
+            audit_bucket["Audit Log Bucket<br/>- CloudTrail logs<br/>- S3 access logs<br/>- Object Lock (WORM)"]
+        end
+    end
+
+    subgraph external["External Access"]
+        analyst["Data Analyst<br/>(SSO -> Assume Role)"]
+        engineer["Data Engineer<br/>(SSO -> Assume Role)"]
+        dashboard["Monitoring Dashboard<br/>(CloudFront + Cognito)"]
+        gh_actions["GitHub Actions<br/>(OIDC -> AssumeRoleWithWebIdentity)"]
+    end
+
+    subgraph rbac["RBAC Model"]
+        role_admin["DomainAdmin<br/>Full domain access<br/>Can modify Lake Formation"]
+        role_eng["DataEngineer<br/>R/W Bronze + Silver<br/>Read Gold<br/>Execute pipelines"]
+        role_analyst_r["DataAnalyst<br/>Read-only Gold tier<br/>Athena queries only"]
+        role_pipeline["PipelineExecution<br/>Service role for Glue/Lambda/SFn<br/>Scoped to domain resources"]
+        role_monitor["MonitoringReadOnly<br/>CloudWatch, X-Ray, dashboards<br/>No data access"]
+    end
+
+    sso --> analyst & engineer
+    analyst --> role_analyst_r
+    engineer --> role_eng
+    gh_actions -->|"OIDC (no access keys)"| role_pipeline
+
+    subgraph security_controls["Security Controls"]
+        s3_bpa["S3 Block Public Access<br/>(account-level)"]
+        encryption["Encryption at Rest<br/>SSE-KMS (all S3, Redshift, Glue)"]
+        tls["Encryption in Transit<br/>TLS 1.2+ everywhere"]
+        waf["WAF on API Gateway<br/>(if public-facing)"]
+        sg["Security Groups<br/>No 0.0.0.0/0 ingress<br/>on data ports"]
+        dependabot["Dependabot + pip-audit + npm audit<br/>(zero critical vulns at deploy)"]
+    end
+
+    style aws_org fill:#1a73e8,color:#fff
+    style mgmt fill:#4a5568,color:#fff
+    style dev_account fill:#2d6a4f,color:#fff
+    style tst_account fill:#b45309,color:#fff
+    style prd_account fill:#b91c1c,color:#fff
+    style rbac fill:#6b21a8,color:#fff
+    style security_controls fill:#991b1b,color:#fff
+    style external fill:#6b7280,color:#fff

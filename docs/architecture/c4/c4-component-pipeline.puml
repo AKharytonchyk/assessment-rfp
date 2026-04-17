@@ -1,0 +1,64 @@
+@startuml c4-component-pipeline
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+LAYOUT_TOP_DOWN()
+
+title Enterprise Data Platform - Component Diagram: Pipeline Orchestration
+
+System_Ext(source, "Source System", "CRM / ERP / HRIS / Files")
+
+Container_Boundary(sfn_container, "Step Functions Pipeline Orchestrator") {
+
+    Component(config, "Config Reader", "Lambda", "Reads pipeline params from SSM: schedule, source, DQ thresholds")
+
+    Component(ingest, "Ingest Step", "Glue Job", "Extracts from source via edp_common connectors, writes Bronze as Parquet")
+    Component(dq1, "Bronze DQ Gate", "Lambda + GX", "Schema check, record count, ingestion timestamp")
+
+    Component(transform, "Transform Step", "Glue PySpark", "Type casting, dedup, PII masking, schema enforcement -> Silver")
+    Component(dq2, "Silver DQ Gate", "Lambda + GX", "Completeness >= 95%, accuracy, schema conformance")
+
+    Component(publish, "Publish Step", "Glue PySpark", "Aggregation, joins, business logic, SCD Type 2 -> Gold")
+    Component(dq3, "Gold DQ Gate", "Lambda + GX", "Completeness >= 99%, timeliness SLA, business rules")
+
+    Component(notify, "Notify Step", "Lambda", "Emits completion event, writes execution record, alerts on failure")
+    Component(error, "Error Handler", "SFn Catch/Retry", "3x retry with backoff, then quarantine + alert + FAILED")
+}
+
+Container_Ext(ssm, "SSM Parameter Store", "Pipeline configuration")
+Container_Ext(s3_bronze, "S3 Bronze (Raw)", "Source-native data")
+Container_Ext(s3_silver, "S3 Silver (Curated)", "Cleansed data")
+Container_Ext(s3_gold, "S3 Gold (Published)", "Business-ready data")
+Container_Ext(s3_rejected, "S3 Rejected", "Quarantined bad records")
+Container_Ext(catalog, "Glue Catalog", "Schema metadata")
+Container_Ext(dynamo, "DynamoDB", "Execution records")
+Container_Ext(events, "EventBridge + SNS", "Events and alerts")
+Container_Ext(cw, "CloudWatch + X-Ray", "Metrics and traces")
+
+Rel_D(config, ssm, "Reads config")
+Rel_D(source, ingest, "Provides data")
+Rel_D(ingest, s3_bronze, "Writes raw")
+Rel_R(ingest, catalog, "Updates tables")
+Rel_D(ingest, dq1, "Next")
+
+Rel_D(dq1, transform, "Pass")
+Rel_D(dq1, cw, "Emits metrics")
+
+Rel_D(transform, s3_silver, "Writes curated")
+Rel_D(transform, dq2, "Next")
+
+Rel_D(dq2, publish, "Pass")
+Rel_D(dq2, s3_rejected, "Fail: quarantine")
+
+Rel_D(publish, s3_gold, "Writes published")
+Rel_D(publish, dq3, "Next")
+
+Rel_D(dq3, notify, "Pass")
+
+Rel_D(notify, events, "Pipeline events + alerts")
+Rel_D(notify, dynamo, "Writes execution record")
+
+Rel_D(error, events, "Failure alert")
+Rel_D(error, s3_rejected, "Quarantine")
+
+@enduml

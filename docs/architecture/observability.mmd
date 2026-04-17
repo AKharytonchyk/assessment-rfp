@@ -1,0 +1,108 @@
+---
+title: "Observability Architecture - Four Pillars"
+---
+flowchart TB
+    subgraph platform["EDP Platform Services"]
+        glue["Glue Jobs"]
+        lambda["Lambda Functions"]
+        sfn["Step Functions"]
+        apigw["API Gateway"]
+        s3["S3 Buckets"]
+        redshift["Redshift Serverless"]
+        codebuild["CodeBuild (AI Agents)"]
+    end
+
+    subgraph pillar1["Pillar 1: Structured Logging"]
+        json_logs["JSON Structured Logs<br/>- Correlation IDs (pipelineRunId, domainId)<br/>- Severity levels<br/>- Stage context (ingest/transform/publish)"]
+        cw_logs["CloudWatch Log Groups<br/>/edp/{domain}/{env}/{service}"]
+        log_insights["CloudWatch Log Insights<br/>Pre-built saved queries:<br/>- Pipeline errors by domain<br/>- Slow stages (> p95)<br/>- DQ failures by type"]
+        log_agg["Cross-Env Aggregation<br/>Subscription filters -> central account<br/>Hot: 90 days | Cold: 1 year (S3)"]
+    end
+
+    subgraph pillar2["Pillar 2: Metrics"]
+        custom_metrics["Custom CloudWatch Metrics<br/>Namespace: EDP/{Domain}/{Tier}"]
+
+        subgraph biz_metrics["Business Metrics"]
+            records_proc["records_processed_total"]
+            records_rej["records_rejected_total"]
+            pipeline_dur["pipeline_duration_seconds"]
+            freshness["data_freshness_lag_seconds"]
+            dq_scores["dq_completeness_score<br/>dq_accuracy_score"]
+        end
+
+        subgraph infra_metrics["Infrastructure Metrics"]
+            glue_dpu["glue_dpu_utilization"]
+            lambda_cold["lambda_cold_start_ms"]
+            lambda_err["lambda_error_rate"]
+            s3_bytes["s3_storage_bytes_by_domain"]
+            api_latency["api_latency_p99"]
+        end
+
+        subgraph cost_metrics["Cost Metrics"]
+            daily_spend["daily_spend_by_domain"]
+            glue_cost["glue_job_cost_per_run"]
+            bedrock_cost["bedrock_tokens_by_agent"]
+        end
+    end
+
+    subgraph pillar3["Pillar 3: Distributed Tracing"]
+        xray["AWS X-Ray"]
+        trace_lambda["Lambda traces<br/>(auto-instrumented)"]
+        trace_sfn["Step Functions traces<br/>(state-level spans)"]
+        trace_apigw["API Gateway traces<br/>(request lifecycle)"]
+        trace_map["Service Map<br/>E2E pipeline trace:<br/>Ingest -> DQ -> Transform -> Publish"]
+    end
+
+    subgraph pillar4["Pillar 4: Alerting & Incident Management"]
+        cw_alarms["CloudWatch Alarms<br/>- Simple: single metric threshold<br/>- Composite: multi-condition SLO breach"]
+        sns_topics["SNS Topics<br/>per-domain alert routing"]
+
+        subgraph channels["Notification Channels"]
+            email["Email"]
+            slack_ch["Slack"]
+            pagerduty["PagerDuty / OpsGenie<br/>P1-P4 severity mapping<br/>On-call rotation per domain"]
+        end
+
+        runbook_auto["Runbook Automation<br/>Lambda auto-remediation:<br/>- Restart failed pipeline<br/>- Clear Glue bookmark<br/>- Scale Redshift RPU"]
+    end
+
+    subgraph dashboards["Dashboard Layer"]
+        react_dash["React Monitoring Dashboard<br/>- Pipeline execution view<br/>- DQ scorecard + trends<br/>- Cross-domain hub<br/>- Data lineage DAG"]
+        grafana_dash["Grafana Ops Dashboards<br/>- Glue DPU utilization<br/>- Lambda performance<br/>- S3 storage growth<br/>- Cost breakdown"]
+        slo_dash["SLO Dashboard<br/>- Pipeline SLA adherence %<br/>- Data freshness compliance<br/>- Error budget remaining"]
+        health_calc["DomainHealthScoreCalc<br/>0.4·DQ + 0.3·freshness<br/>+ 0.2·success + 0.1·(1-cost_anom)<br/>per docs/architecture/domain-health-score.md"]
+    end
+
+    platform --> pillar1
+    platform --> pillar2
+    platform --> pillar3
+    platform --> pillar4
+
+    json_logs --> cw_logs
+    cw_logs --> log_insights
+    cw_logs --> log_agg
+
+    custom_metrics --> cw_alarms
+    cw_alarms --> sns_topics
+    sns_topics --> channels
+    sns_topics --> runbook_auto
+
+    xray --> trace_lambda & trace_sfn & trace_apigw
+    trace_lambda & trace_sfn & trace_apigw --> trace_map
+
+    pillar1 --> dashboards
+    pillar2 --> dashboards
+    pillar3 --> dashboards
+    pillar4 --> dashboards
+
+    pillar2 --> health_calc
+    pillar4 --> health_calc
+    health_calc --> react_dash
+    health_calc --> slo_dash
+
+    style pillar1 fill:#1a73e8,color:#fff
+    style pillar2 fill:#2d6a4f,color:#fff
+    style pillar3 fill:#6b21a8,color:#fff
+    style pillar4 fill:#b91c1c,color:#fff
+    style dashboards fill:#d97706,color:#fff
+    style platform fill:#4a5568,color:#fff

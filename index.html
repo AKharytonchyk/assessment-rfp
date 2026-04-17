@@ -1,0 +1,2190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDP RFP Response — Enterprise Data Platform</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+
+<!-- Typography: Fraunces (variable serif, display) · Hanken Grotesk (body) · JetBrains Mono (code) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Hanken+Grotesk:ital,wght@0,300..900;1,300..900&family=JetBrains+Mono:wght@300..800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#12121E',
+      primaryTextColor: '#FBFAFA',
+      primaryBorderColor: '#00F6FF',
+      lineColor: '#7BA8FF',
+      secondaryColor: '#12121E',
+      tertiaryColor: '#12121E',
+      noteBkgColor: '#12121E',
+      noteTextColor: '#FBFAFA',
+      edgeLabelBackground: '#060606'
+    }
+  });
+</script>
+<style>
+  /* ══════════════════════════════════════════════════════════════════════════
+     EDP · Enterprise Data Platform — Assessment Deck
+     Aesthetic: editorial technical · Bloomberg Terminal refinement meets
+     MIT Technology Review typography · precision-engineered dark mode
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  :root {
+    --night:    #060606;
+    --ink:      #0A0A12;
+    --card:     #12121E;
+    --card-hi:  #1A1A28;
+    --sea:      #00F6FF;
+    --mint:     #00FFF0;
+    --lilac:    #B896FF;
+    --sky:      #7BA8FF;
+    --snow:     #FBFAFA;
+    --muted:    #7A7A88;
+    --muted-2:  #55555F;
+    --line:     rgba(255, 255, 255, 0.06);
+    --line-hi:  rgba(0, 246, 255, 0.16);
+
+    --fs-display: 'Fraunces', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+    --fs-body:    'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --fs-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+
+  /* ── Global atmosphere ──────────────────────────────────────────────────── */
+  html, body { background: var(--night); }
+  .reveal-viewport { background: var(--night); }
+  body {
+    background:
+      radial-gradient(ellipse 80% 55% at 50% 0%,   rgba(0, 246, 255, 0.045), transparent 65%),
+      radial-gradient(ellipse 60% 45% at 100% 100%, rgba(184, 150, 255, 0.030), transparent 60%),
+      radial-gradient(ellipse 40% 35% at 0% 100%,   rgba(123, 168, 255, 0.022), transparent 60%),
+      var(--night);
+    background-attachment: fixed;
+  }
+  /* fine-grain noise overlay — sits behind content, above body bg */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+      url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='7'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+    opacity: 0.04;
+  }
+
+  /* ── Slide scaffold ─────────────────────────────────────────────────────── */
+  .reveal,
+  .reveal .slides section {
+    font-family: var(--fs-body);
+    font-feature-settings: 'ss01' 1, 'cv11' 1;
+    color: var(--snow);
+    background: transparent;
+    text-align: left;
+  }
+  .reveal .slides section {
+    box-sizing: border-box;
+    padding: 44px 64px 38px;
+    height: 100%;
+    display: flex !important;
+    flex-direction: column;
+    overflow: hidden;
+    /* NOTE: do NOT set `position` here — Reveal.js sets `position: absolute`
+       on sections for navigation. Overriding that (even with `relative`)
+       breaks hash navigation (#/1, #/2, ...). Reveal's own positioning
+       already gives pseudo-elements the stacking context they need. */
+  }
+
+  /* Print-press corner registration marks on every slide */
+  .reveal .slides section::before,
+  .reveal .slides section::after {
+    content: '';
+    position: absolute;
+    width: 14px; height: 14px;
+    border-color: var(--line-hi);
+    pointer-events: none;
+  }
+  .reveal .slides section::before {
+    top: 20px; left: 20px;
+    border-top: 1px solid; border-left: 1px solid;
+  }
+  .reveal .slides section::after {
+    bottom: 20px; right: 20px;
+    border-bottom: 1px solid; border-right: 1px solid;
+  }
+
+  /* Reset reveal defaults */
+  .reveal h1, .reveal h2, .reveal h3, .reveal h4,
+  .reveal p, .reveal li, .reveal ul, .reveal ol,
+  .reveal td, .reveal th, .reveal code {
+    text-transform: none;
+    letter-spacing: 0;
+    text-shadow: none;
+    margin-left: 0; margin-right: 0;
+  }
+
+  /* ── Typography scale ───────────────────────────────────────────────────── */
+  .reveal h1 {
+    font-family: var(--fs-display);
+    font-weight: 360;
+    font-variation-settings: 'opsz' 144, 'SOFT' 40;
+    font-size: 72px;
+    letter-spacing: -0.035em;
+    line-height: 0.95;
+    color: var(--snow);
+    margin: 0 0 18px;
+  }
+
+  .reveal h2 {
+    font-family: var(--fs-display);
+    font-weight: 380;
+    font-variation-settings: 'opsz' 72, 'SOFT' 30;
+    font-size: 36px;
+    letter-spacing: -0.022em;
+    line-height: 1.05;
+    color: var(--snow);
+    margin: 0 0 20px;
+    padding-bottom: 14px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .reveal h2::after {
+    content: '';
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 56px;
+    height: 1px;
+    background: var(--sea);
+    box-shadow: 0 0 10px rgba(0, 246, 255, 0.5);
+  }
+
+  .reveal h3 {
+    font-family: var(--fs-body);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--sea);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin: 0 0 6px;
+  }
+
+  .reveal h4 {
+    font-family: var(--fs-body);
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    margin: 0 0 4px;
+    color: var(--snow);
+  }
+
+  .reveal p {
+    font-size: 16px;
+    line-height: 1.55;
+    margin: 0 0 8px;
+    color: var(--snow);
+    font-weight: 400;
+  }
+
+  .reveal li {
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 0 0 5px;
+    color: var(--snow);
+  }
+
+  /* Custom bullet — directional arrow in monospace */
+  .reveal ul {
+    margin: 4px 0 8px 0;
+    padding: 0;
+    list-style: none;
+  }
+  .reveal ul li {
+    position: relative;
+    padding-left: 22px;
+  }
+  .reveal ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--sea);
+    font-family: var(--fs-mono);
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  /* Numbered lists with mono decimal-leading-zero counters */
+  .reveal ol {
+    counter-reset: edp-item;
+    margin: 4px 0 8px 0;
+    padding: 0;
+    list-style: none;
+  }
+  .reveal ol li {
+    counter-increment: edp-item;
+    position: relative;
+    padding-left: 34px;
+  }
+  .reveal ol li::before {
+    content: counter(edp-item, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 2px;
+    color: var(--sea);
+    font-family: var(--fs-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+  }
+
+  .reveal code {
+    font-family: var(--fs-mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--mint);
+    background: rgba(0, 246, 255, 0.06);
+    padding: 1px 7px;
+    border-radius: 2px;
+    border: 1px solid rgba(0, 246, 255, 0.14);
+    letter-spacing: 0.01em;
+  }
+
+  .reveal a {
+    color: var(--sea);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(0, 246, 255, 0.35);
+    transition: color 180ms ease, border-color 180ms ease;
+  }
+  .reveal a:hover { color: var(--mint); border-bottom-color: var(--mint); }
+
+  .reveal strong { font-weight: 700; color: var(--snow); }
+  .reveal em {
+    font-style: italic;
+    font-family: var(--fs-display);
+    font-variation-settings: 'opsz' 72;
+  }
+
+  /* Color utilities */
+  .muted { color: var(--muted) !important; }
+  .sea   { color: var(--sea)   !important; }
+  .mint  { color: var(--mint)  !important; }
+  .lilac { color: var(--lilac) !important; }
+  .sky   { color: var(--sky)   !important; }
+  .snow  { color: var(--snow)  !important; }
+
+  /* ── Tables — editorial horizontal rules ────────────────────────────────── */
+  .reveal table {
+    font-size: 13.5px;
+    border-collapse: collapse;
+    width: 100%;
+    margin: 8px 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .reveal th, .reveal td {
+    border: none;
+    border-bottom: 1px solid var(--line);
+    padding: 9px 14px 9px 0;
+    text-align: left;
+    vertical-align: top;
+    line-height: 1.45;
+  }
+  .reveal th {
+    color: var(--sea);
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(0, 246, 255, 0.3);
+    padding-bottom: 9px;
+    padding-top: 4px;
+    background: transparent;
+  }
+  .reveal tbody tr:last-child td { border-bottom: none; }
+  .reveal td strong { color: var(--snow); font-weight: 600; }
+  .reveal td code { font-size: 12px; }
+
+  /* ── Cards — etched with gradient border ────────────────────────────────── */
+  .card {
+    background: linear-gradient(180deg, var(--card) 0%, var(--ink) 100%);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: border-color 200ms ease, transform 200ms ease;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 4px;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(0, 246, 255, 0.22), transparent 45%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+  }
+  .card > h3 {
+    margin: 0;
+    padding: 14px 20px 10px;
+    border-bottom: 1px solid var(--line);
+    flex-shrink: 0;
+  }
+  .card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 14px 20px 16px;
+  }
+  .card-content p   { font-size: 13.5px; line-height: 1.5; margin: 0 0 4px; }
+  .card-content li  { font-size: 13px; line-height: 1.45; margin: 0 0 3px; }
+  .card-content h4  { font-size: 14px; margin: 6px 0 3px; font-weight: 600; letter-spacing: 0; }
+  .card-content .muted { font-size: 12px; color: var(--muted); }
+  .card-content table { font-size: 12px; margin: 4px 0; }
+  .card-content th { font-size: 9px; letter-spacing: 0.18em; padding-bottom: 6px; }
+  .card-content td { padding: 6px 10px 6px 0; font-size: 12px; line-height: 1.4; }
+  .card-content ol li { padding-left: 28px; }
+
+  .card.card-center {
+    justify-content: center;
+    text-align: center;
+    padding: 22px 16px;
+  }
+  .card.card-center h4 {
+    margin: 0 0 10px;
+    font-family: var(--fs-body);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.01em;
+  }
+  .card.card-center p {
+    font-size: 12.5px;
+    margin: 0 0 3px;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+  .card.card-center .badge {
+    display: block;
+    margin: 14px -16px -22px;
+    border-radius: 0;
+    padding: 9px 0;
+  }
+
+  /* ── Grids ──────────────────────────────────────────────────────────────── */
+  .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1; min-height: 0; }
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; flex: 1; min-height: 0; }
+  .four-col  { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; flex: 1; min-height: 0; align-content: center; }
+  .five-col  { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+
+  .diagram-row {
+    display: grid;
+    grid-template-columns: 56% 42%;
+    gap: 24px;
+    flex: 1;
+    min-height: 0;
+    align-items: center;
+  }
+  .diagram-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    max-height: 100%;
+    padding: 10px;
+    background:
+      radial-gradient(ellipse 70% 60% at center, rgba(0, 246, 255, 0.045), transparent 70%);
+    border-radius: 6px;
+    position: relative;
+  }
+
+  /* ── Mermaid ────────────────────────────────────────────────────────────── */
+  pre.mermaid {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-family: var(--fs-mono) !important;
+    font-size: 13px;
+    text-align: center;
+  }
+  pre.mermaid svg { max-height: 540px; max-width: 100%; }
+
+  /* ── Footer ─────────────────────────────────────────────────────────────── */
+  .slide-footer {
+    margin-top: auto;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    text-align: left;
+    flex-shrink: 0;
+  }
+  .slide-footer p {
+    font-family: var(--fs-display);
+    font-style: italic;
+    font-variation-settings: 'opsz' 24;
+    font-size: 14px;
+    margin: 0;
+    color: var(--muted);
+    letter-spacing: -0.005em;
+    line-height: 1.45;
+    max-width: 95%;
+  }
+  .slide-footer p strong {
+    font-style: normal;
+    color: var(--snow);
+    font-family: var(--fs-body);
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  /* ── Slide sub-heading ──────────────────────────────────────────────────── */
+  .slide-sub {
+    font-family: var(--fs-display);
+    font-style: italic;
+    font-variation-settings: 'opsz' 72, 'SOFT' 60;
+    font-size: 19px;
+    color: var(--muted);
+    margin: -6px 0 22px;
+    flex-shrink: 0;
+    letter-spacing: -0.012em;
+    line-height: 1.35;
+    max-width: 88%;
+  }
+
+  .content-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 0;
+  }
+
+  /* ── Badge ──────────────────────────────────────────────────────────────── */
+  .badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 0;
+    font-size: 9.5px;
+    font-weight: 600;
+    font-family: var(--fs-mono);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--night);
+  }
+  .badge.mint  { background: var(--mint); }
+  .badge.sea   { background: var(--sea); }
+  .badge.sky   { background: var(--sky); }
+  .badge.lilac { background: var(--lilac); }
+  .badge.snow  { background: var(--snow); }
+
+  /* ── Steps — circular serif numerals ────────────────────────────────────── */
+  .steps-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+  }
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 22px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    flex-shrink: 0;
+    width: 54px; height: 54px;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    font-family: var(--fs-display);
+    font-weight: 340;
+    font-variation-settings: 'opsz' 72, 'SOFT' 30;
+    font-size: 22px;
+    position: relative;
+    color: var(--sea);
+  }
+  .step-num::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    opacity: 0.18;
+  }
+  .step-num.sea    { color: var(--sea); }
+  .step-num.sky    { color: var(--sky); }
+  .step-num.mint   { color: var(--mint); }
+  .step-num.lilac  { color: var(--lilac); }
+  .step-num.snow   { color: var(--snow); }
+
+  .step-body h4 {
+    font-size: 18px;
+    margin: 6px 0 4px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+  }
+  .step-body p {
+    font-size: 14px;
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ── Priorities ─────────────────────────────────────────────────────────── */
+  .priorities {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+  }
+  .priority {
+    padding: 14px 20px;
+    background: linear-gradient(90deg, rgba(18, 18, 30, 0.8) 0%, transparent 100%);
+    border-left: 2px solid var(--sea);
+    border-radius: 0;
+  }
+  .priority h4 { font-size: 17px; margin: 0; }
+  .priority p  { font-size: 14px; margin: 4px 0 0; color: var(--muted); }
+
+  /* ── Title slide — asymmetric, atmospheric, editorial ───────────────────── */
+  .reveal .slides section:first-child { padding: 56px 72px 56px; }
+  .title-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    text-align: left;
+    position: relative;
+  }
+  .title-center::before {
+    content: '';
+    position: absolute;
+    inset: -40px;
+    background:
+      radial-gradient(ellipse 55% 45% at 25% 45%, rgba(0, 246, 255, 0.11), transparent 65%),
+      radial-gradient(ellipse 45% 40% at 80% 70%, rgba(184, 150, 255, 0.07), transparent 60%),
+      radial-gradient(ellipse 35% 30% at 60% 20%, rgba(0, 255, 240, 0.05), transparent 60%);
+    pointer-events: none;
+    filter: blur(2px);
+    animation: orbitalDrift 22s ease-in-out infinite alternate;
+  }
+  @keyframes orbitalDrift {
+    0%   { transform: translate(0, 0) scale(1) rotate(0deg); }
+    50%  { transform: translate(2%, -1.5%) scale(1.04) rotate(1deg); }
+    100% { transform: translate(-1.5%, 1%) scale(1) rotate(-0.5deg); }
+  }
+  .title-center > * { position: relative; z-index: 1; }
+  /* Decorative dossier eyebrow above title */
+  .title-center::after {
+    content: '§ 001 · DOSSIER';
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-family: var(--fs-mono);
+    font-size: 11px;
+    color: var(--sea);
+    letter-spacing: 0.28em;
+    z-index: 1;
+  }
+  .title-center h1 {
+    font-family: var(--fs-display);
+    font-size: 112px;
+    font-weight: 280;
+    font-variation-settings: 'opsz' 144, 'SOFT' 60;
+    letter-spacing: -0.045em;
+    line-height: 0.9;
+    margin: 0 0 0;
+    color: var(--snow);
+    max-width: 13ch;
+  }
+  .title-center .subtitle {
+    font-family: var(--fs-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--sea);
+    margin: 32px 0 0;
+    padding-top: 22px;
+    border-top: 1px solid var(--line-hi);
+    max-width: 36ch;
+  }
+  .title-center .tagline {
+    font-family: var(--fs-display);
+    font-style: italic;
+    font-variation-settings: 'opsz' 72, 'SOFT' 60;
+    font-size: 22px;
+    font-weight: 380;
+    color: var(--snow);
+    letter-spacing: -0.018em;
+    line-height: 1.35;
+    margin: 14px 0 0;
+    max-width: 52ch;
+  }
+  .title-center .tech {
+    font-family: var(--fs-mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin: 44px 0 0;
+  }
+  .title-center .date {
+    font-family: var(--fs-mono);
+    font-size: 10px;
+    color: var(--muted-2);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin: 8px 0 0;
+  }
+  /* Title slide: no custom pagination — Reveal's native slide-number shows actual count */
+  /* Giant decorative "EDP" numeral in title corner */
+  .title-center .subtitle::before {
+    content: '◆';
+    color: var(--sea);
+    margin-right: 14px;
+    font-size: 9px;
+    vertical-align: middle;
+  }
+
+  /* ── Agenda — columned index ────────────────────────────────────────────── */
+  .agenda-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0 36px;
+    flex: 1;
+    align-content: center;
+  }
+  .agenda-grid .item {
+    font-family: var(--fs-body);
+    font-size: 13.5px;
+    padding: 11px 0;
+    border-left: none;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    color: var(--snow);
+    transition: border-color 220ms ease, color 180ms ease;
+  }
+  .agenda-grid .item:hover {
+    border-bottom-color: var(--sea);
+    color: var(--mint);
+  }
+  .agenda-grid .item .num {
+    color: var(--sea);
+    font-family: var(--fs-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    min-width: 24px;
+    margin-right: 0;
+  }
+
+  /* ── Journey timeline ───────────────────────────────────────────────────── */
+  .journey-timeline {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
+    position: relative;
+  }
+  .journey-row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 28px;
+    align-items: start;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  .journey-row:last-child { border-bottom: none; }
+  .journey-row::before {
+    content: '';
+    position: absolute;
+    left: 100px; top: 16px; bottom: -1px;
+    width: 1px;
+    background: var(--line);
+  }
+  .journey-row:last-child::before { display: none; }
+  .journey-row .time {
+    font-family: var(--fs-display);
+    font-size: 28px;
+    font-weight: 320;
+    font-variation-settings: 'opsz' 72, 'SOFT' 40;
+    color: var(--sea);
+    letter-spacing: -0.025em;
+    line-height: 1;
+    padding-top: 3px;
+  }
+  .journey-row .who {
+    font-family: var(--fs-body);
+    font-size: 11px;
+    color: var(--mint);
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .journey-row .what {
+    font-size: 14px;
+    color: var(--snow);
+    line-height: 1.5;
+  }
+  .journey-row .what span { color: var(--muted); }
+
+  /* ── KPI grid ───────────────────────────────────────────────────────────── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    flex: 1;
+    min-height: 0;
+    align-content: center;
+  }
+  .kpi-card {
+    background: linear-gradient(180deg, var(--card) 0%, var(--ink) 100%);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 18px 22px;
+    position: relative;
+    transition: border-color 200ms ease;
+  }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 22px; right: 22px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--sea), transparent);
+    opacity: 0.55;
+  }
+  .kpi-card h4 {
+    font-family: var(--fs-body);
+    font-size: 10px;
+    margin: 0 0 16px;
+    color: var(--sea);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .kpi-card .val {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 12px;
+    margin: 0;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  .kpi-card .val:last-child { border-bottom: none; padding-bottom: 0; }
+  .kpi-card .val .lbl {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .kpi-card .val .n {
+    color: var(--mint);
+    font-family: var(--fs-display);
+    font-weight: 340;
+    font-size: 24px;
+    font-variation-settings: 'opsz' 72, 'SOFT' 40;
+    letter-spacing: -0.025em;
+  }
+  .kpi-card .val .muted.n,
+  .kpi-card .val span.muted {
+    color: var(--muted-2) !important;
+    font-family: var(--fs-mono);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  /* ── Helpers ────────────────────────────────────────────────────────────── */
+  .small { font-size: 13px; }
+  .tiny  { font-size: 11px; }
+  .nowrap { white-space: nowrap; }
+  .center { text-align: center; }
+
+  /* ── Reveal chrome ──────────────────────────────────────────────────────── */
+  .reveal .progress {
+    height: 1px;
+    color: var(--sea);
+    background: rgba(0, 246, 255, 0.08);
+  }
+  .reveal .progress span {
+    background: var(--sea);
+    box-shadow: 0 0 10px rgba(0, 246, 255, 0.7);
+    transition: transform 420ms cubic-bezier(0.22, 0.7, 0.18, 1);
+  }
+
+  /* ── Unified bottom-right nav strip: [ ‹ ]  01 / 36  [ › ] ─────────────── */
+  /* All three elements live in ONE flex container (.slide-number is moved     */
+  /* into .controls via JS at Reveal ready). Single baseline, single height.  */
+
+  .reveal .controls {
+    position: fixed !important;
+    bottom: 22px !important;
+    right: 28px !important;
+    top: auto !important;
+    left: auto !important;
+    width: auto !important;
+    height: 28px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    z-index: 100;
+    pointer-events: none; /* individual children re-enable */
+    color: var(--muted);
+  }
+
+  /* Hide vertical-nav buttons — the deck is a flat sequence */
+  .reveal .controls .navigate-up,
+  .reveal .controls .navigate-down {
+    display: none !important;
+  }
+
+  /* Arrow buttons: hairline-bordered squares, same height as the strip */
+  .reveal .controls button.navigate-left,
+  .reveal .controls button.navigate-right {
+    position: static !important;
+    transform: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 32px !important;
+    height: 28px !important;
+    box-sizing: border-box;
+    background: transparent !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 2px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-family: var(--fs-mono) !important;
+    color: var(--muted) !important;
+    line-height: 1 !important;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+  }
+  .reveal .controls button.navigate-left:hover,
+  .reveal .controls button.navigate-right:hover {
+    border-color: var(--sea) !important;
+    color: var(--sea) !important;
+    background: rgba(0, 246, 255, 0.06) !important;
+  }
+  .reveal .controls button.navigate-left.enabled,
+  .reveal .controls button.navigate-right.enabled {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  .reveal .controls button.navigate-left:not(.enabled),
+  .reveal .controls button.navigate-right:not(.enabled) {
+    opacity: 0.22 !important;
+    pointer-events: none;
+    visibility: visible !important;
+  }
+
+  /* Replace Reveal's CSS-triangle arrow with a typographic glyph */
+  .reveal .controls button .controls-arrow {
+    display: none !important;
+  }
+  .reveal .controls button.navigate-left::after,
+  .reveal .controls button.navigate-right::after {
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1;
+    margin-top: -2px; /* optical center adjustment */
+  }
+  .reveal .controls button.navigate-left::after  { content: '‹'; }
+  .reveal .controls button.navigate-right::after { content: '›'; }
+
+  /* Slide counter — after JS, it's a flex child between the two arrows. */
+  /* Reset Reveal's default absolute positioning; matches strip height.   */
+  .reveal .slide-number {
+    position: static !important;
+    inset: auto !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    margin: 0 !important;
+    padding: 0 4px !important;
+    height: 28px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    background: transparent !important;
+    font-family: var(--fs-mono) !important;
+    font-size: 10px !important;
+    font-weight: 500;
+    letter-spacing: 0.22em !important;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted) !important;
+    text-transform: uppercase !important;
+    line-height: 1 !important;
+    pointer-events: none;
+    white-space: nowrap;
+    min-width: 54px;
+    justify-content: center;
+  }
+  .reveal .slide-number a {
+    color: inherit;
+    border: none;
+    pointer-events: none;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* ── Persistent deck chrome (brand + metadata strip) ────────────────────── */
+  .deck-chrome-top {
+    position: fixed;
+    top: 20px;
+    left: 42px;
+    right: 42px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--fs-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--muted-2);
+    pointer-events: none;
+    z-index: 98;
+  }
+  .deck-chrome-top .brand {
+    color: var(--sea);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .deck-chrome-top .brand::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--sea);
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(0, 246, 255, 0.8);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.4; transform: scale(0.85); }
+  }
+  .deck-chrome-bottom {
+    position: fixed;
+    bottom: 22px;
+    left: 42px;
+    font-family: var(--fs-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--muted-2);
+    pointer-events: none;
+    z-index: 98;
+  }
+
+  /* ── Entry animation — title slide only, gentle and safe ───────────────── */
+  .reveal .slides section:first-child.present .title-center h1 {
+    animation: riseHero 720ms cubic-bezier(0.22, 0.75, 0.2, 1);
+  }
+  .reveal .slides section:first-child.present .title-center .subtitle {
+    animation: riseHero 720ms cubic-bezier(0.22, 0.75, 0.2, 1) 260ms backwards;
+  }
+  .reveal .slides section:first-child.present .title-center .tagline {
+    animation: riseHero 720ms cubic-bezier(0.22, 0.75, 0.2, 1) 420ms backwards;
+  }
+  .reveal .slides section:first-child.present .title-center .tech {
+    animation: riseHero 720ms cubic-bezier(0.22, 0.75, 0.2, 1) 600ms backwards;
+  }
+  .reveal .slides section:first-child.present .title-center .date {
+    animation: riseHero 720ms cubic-bezier(0.22, 0.75, 0.2, 1) 700ms backwards;
+  }
+  @keyframes riseHero {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Print ──────────────────────────────────────────────────────────────── */
+  @media print {
+    body::before { display: none; }
+    .reveal .slides section::before,
+    .reveal .slides section::after { display: none; }
+    .deck-chrome-top, .deck-chrome-bottom { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Persistent deck chrome — brand strip + metadata -->
+<div class="deck-chrome-top">
+  <span class="brand">EDP-2026-01 · Enterprise Data Platform</span>
+  <span>EPAM × [Firm] · April 2026</span>
+</div>
+<div class="deck-chrome-bottom">RFP Response · DM3+ Assessment</div>
+
+<div class="reveal">
+<div class="slides">
+
+<!-- ═══ SLIDE 1: Title ═══ -->
+<section data-transition="fade">
+  <div class="title-center">
+    <h1>Enterprise Data Platform</h1>
+    <p class="subtitle">Request for Proposal — Response</p>
+    <p class="tagline">Domain-centric lakehouse on AWS · AI-accelerated delivery · 16 weeks</p>
+    <p class="tech">Prepared for [Firm] · Prepared by EPAM Systems</p>
+    <p class="date">Project code: EDP-2026-01 · April 2026</p>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 2: Agenda ═══ -->
+<section>
+  <h2>Agenda</h2>
+  <div class="agenda-grid">
+    <div class="item"><span class="num">1</span>About Us & Experience</div>
+    <div class="item"><span class="num">2</span>Cloud Stack Alignment</div>
+    <div class="item"><span class="num">3</span>Understanding Requirements</div>
+    <div class="item"><span class="num">4</span>Business Outcomes & KPIs</div>
+    <div class="item"><span class="num">5</span>Pipeline Prioritization</div>
+    <div class="item"><span class="num">6</span>Architecture Decisions (14 ADRs)</div>
+    <div class="item"><span class="num">7</span>Solution Architecture</div>
+    <div class="item"><span class="num">8</span>Geo-Data Specialization</div>
+    <div class="item"><span class="num">9</span>Data Governance & Mesh</div>
+    <div class="item"><span class="num">10</span>Data Quality Framework</div>
+    <div class="item"><span class="num">11</span>Monitoring & Observability</div>
+    <div class="item"><span class="num">12</span>NFRs & SLOs</div>
+    <div class="item"><span class="num">13</span>AI Acceleration</div>
+    <div class="item"><span class="num">14</span>CI/CD & DevOps</div>
+    <div class="item"><span class="num">15</span>Security & Access Control</div>
+    <div class="item"><span class="num">16</span>End-to-End User Journey</div>
+    <div class="item"><span class="num">17</span>MVP / Thin-Slice Strategy</div>
+    <div class="item"><span class="num">18</span>Delivery Approach & Roadmap</div>
+    <div class="item"><span class="num">19</span>Team & Resource Plan</div>
+    <div class="item"><span class="num">20</span>Risk Management</div>
+    <div class="item"><span class="num">21</span>ROM Financial Proposal</div>
+    <div class="item"><span class="num">22</span>Assumptions & Dependencies</div>
+    <div class="item"><span class="num">23</span>Migration & Adoption</div>
+    <div class="item"><span class="num">24</span>References · Q&amp;A</div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 3: About Us ═══ -->
+<section>
+  <h2>About Us — EPAM Systems</h2>
+  <div class="two-col">
+    <div class="card">
+      <h3>At a glance</h3>
+      <div class="card-content">
+        <ul>
+          <li>Global technology services · 50,000+ engineers</li>
+          <li>AWS <strong>Premier Consulting Partner</strong></li>
+          <li>Data &amp; Analytics practice — 200+ data platforms shipped</li>
+          <li>Central Europe delivery: PL · HU · CZ · RO · BG</li>
+        </ul>
+        <h4 class="mint" style="margin-top:10px;">Differentiators</h4>
+        <ul>
+          <li>Domain-centric data platform expertise</li>
+          <li>AI-augmented delivery (Claude Code + automated agents)</li>
+          <li>Proven Medallion on AWS, Iceberg-native</li>
+          <li>Quality-first, IaC-only engineering culture</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Reference projects (anonymized)</h3>
+      <div class="card-content">
+        <h4 class="sea">Enterprise Data Lake · [Industry]</h4>
+        <p class="muted">50+ pipelines, 6 domains · Glue, Step Functions, Athena, Lake Formation · 20 wk · 70% reduction in data prep time</p>
+        <h4 class="sea" style="margin-top:8px;">Data Platform Migration · [Industry]</h4>
+        <p class="muted">On-prem DWH → AWS · Medallion · 100+ sources · 6 mo · 40% cost reduction, 3× query perf</p>
+        <h4 class="sea" style="margin-top:8px;">Real-Time Analytics · [Industry]</h4>
+        <p class="muted">EventBridge, Kinesis, Lambda · sub-second latency · 14 wk · Executive real-time dashboards</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 3b: Cloud Stack Alignment ═══ -->
+<section>
+  <h2>Cloud Stack Alignment — AWS vs RFP §10.3a</h2>
+  <p class="slide-sub">RFP §4 is cloud-agnostic (AWS · Azure · GCP). RFP §10.3a asks for Microsoft references.</p>
+  <div class="steps-list">
+    <div class="step">
+      <div class="step-num sea">1</div>
+      <div class="step-body">
+        <h4 class="sea">We propose AWS (ADR-001)</h4>
+        <p>Service breadth: Glue · Lake Formation · Athena · Redshift Serverless · DataZone · Bedrock · Macie. Native in-region AI via Bedrock. EPAM CE bench depth on AWS data stack.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num mint">2</div>
+      <div class="step-body">
+        <h4 class="mint">Microsoft Fabric / Synapse variant available</h4>
+        <p>Medallion model unchanged. Delta/Iceberg on ADLS Gen2. Purview replaces DataZone. Delta ROM within 1 week of request.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num lilac">3</div>
+      <div class="step-body">
+        <h4 class="lilac">Microsoft reference projects — Appendix B</h4>
+        <p>Three EPAM projects on Fabric / Synapse + Databricks / Purview. Demonstrated capability regardless of stack choice.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <p class="muted">Stack decision is reversible in Phase 0 based on [Firm]'s existing footprint.</p>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 4: Understanding of Requirements (1/2) ═══ -->
+<section>
+  <h2>Understanding of Requirements (1/2)</h2>
+  <div class="two-col">
+    <div class="card">
+      <h3>[Firm]'s challenge</h3>
+      <div class="card-content">
+        <ul>
+          <li>Disparate data landscape: CRM, ERPs, HRIS, CSV, Excel</li>
+          <li>No unified platform for analytics and insights</li>
+          <li>Business leaders lack data-driven decisioning</li>
+        </ul>
+        <h4 class="mint" style="margin-top:10px;">[Firm]'s goal</h4>
+        <ul>
+          <li>Consolidate all sources into one <strong>domain-centric EDP</strong></li>
+          <li>Transform · normalize · validate for analytics</li>
+          <li>Enable <strong>insights-driven decisioning</strong></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <h3>What we heard</h3>
+      <div class="card-content">
+        <ul>
+          <li>Platform must be <strong>reusable · flexible · scalable · standardized · compliant</strong></li>
+          <li>Enable <strong>accelerated development</strong> for future domains</li>
+          <li>Cloud-native — we propose AWS</li>
+          <li>10 pipelines across 2 domains as initial scope</li>
+          <li>Full handoff with documentation and training</li>
+          <li>Migration plan for remaining pipelines</li>
+        </ul>
+        <p class="muted" style="margin-top:8px;">"Domain-centric" + "accelerated development" → Data Mesh approach + AI acceleration.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 4b: Business Outcomes & KPIs ═══ -->
+<section>
+  <h2>Business Outcomes &amp; Success KPIs</h2>
+  <p class="slide-sub">Illustrative — calibrated with real baselines during Phase 0 · signed in the Project Charter</p>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <h4>Time-to-insight</h4>
+      <div class="val"><span class="lbl">Today</span><span class="muted">2 weeks</span></div>
+      <div class="val"><span class="lbl">90-day target</span><span class="n">1 day</span></div>
+    </div>
+    <div class="kpi-card">
+      <h4>Reporting cycle</h4>
+      <div class="val"><span class="lbl">Today</span><span class="muted">Monthly · manual</span></div>
+      <div class="val"><span class="lbl">90-day target</span><span class="n">Weekly · auto</span></div>
+    </div>
+    <div class="kpi-card">
+      <h4>Decisions w/ governed data</h4>
+      <div class="val"><span class="lbl">Today</span><span class="muted">X%</span></div>
+      <div class="val"><span class="lbl">90-day target</span><span class="n">+30 pp</span></div>
+    </div>
+    <div class="kpi-card">
+      <h4>New-domain onboarding</h4>
+      <div class="val"><span class="lbl">Today</span><span class="muted">Quarters</span></div>
+      <div class="val"><span class="lbl">Target</span><span class="n">&lt; 1 hour</span></div>
+    </div>
+    <div class="kpi-card">
+      <h4>Pipeline velocity (client, 2 eng)</h4>
+      <div class="val"><span class="lbl">Baseline</span><span class="muted">1-2 / sprint</span></div>
+      <div class="val"><span class="lbl">With platform</span><span class="n">5 / sprint</span></div>
+    </div>
+    <div class="kpi-card">
+      <h4>Incidents caught pre-prod</h4>
+      <div class="val"><span class="lbl">Today</span><span class="muted">Low</span></div>
+      <div class="val"><span class="lbl">90-day target</span><span class="n">≥ 95%</span></div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <p><strong class="mint">North Star</strong> — [Firm]'s business leaders make more decisions, faster, backed by data they trust.</p>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 4c: Pipeline Prioritization ═══ -->
+<section>
+  <h2>Pipeline Prioritization — Portfolio, Not a Count</h2>
+  <p class="slide-sub">10 pipelines is a portfolio. We select on explicit business merit in Phase 0 (wk 1-2).</p>
+  <div class="diagram-row">
+    <div class="card">
+      <h3>Scoring model</h3>
+      <div class="card-content">
+        <table>
+          <tr><th>Criterion</th><th>Weight</th></tr>
+          <tr><td>Business value</td><td class="mint">40%</td></tr>
+          <tr><td>Data readiness</td><td>20%</td></tr>
+          <tr><td>Complexity (inverse)</td><td>20%</td></tr>
+          <tr><td>Stakeholder alignment</td><td>20%</td></tr>
+        </table>
+        <p class="muted" style="margin-top:8px;">Complexity mix (SC-03): ~3 Low · ~5 Medium · ~2 High</p>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Workshop protocol</h3>
+      <div class="card-content">
+        <ol style="margin-left:20px; padding: 0;">
+          <li>Client lead compiles 15-20 candidates</li>
+          <li>Joint scoring workshop — time-boxed 5 business days</li>
+          <li>Top-10 by composite, 5-per-domain constraint</li>
+          <li>Executive Sponsor signs the binding list</li>
+          <li>Unselected → migration plan backlog (DOC-008)</li>
+        </ol>
+        <p class="muted" style="margin-top:8px;">Full worksheet: <code>docs/delivery/pipeline-prioritization.md</code></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 5: Understanding of Requirements (2/2) ═══ -->
+<section>
+  <h2>Understanding of Requirements (2/2)</h2>
+  <div class="two-col">
+    <div class="card">
+      <h3>Scope confirmation</h3>
+      <div class="card-content">
+        <table>
+          <tr><th>Area</th><th>Our understanding</th></tr>
+          <tr><td>Infrastructure</td><td>Reusable domain templates (IaC), 3 envs, cross-domain linkages</td></tr>
+          <tr><td>CI/CD</td><td>DEV → TST → PRD with security gates</td></tr>
+          <tr><td>Data Quality</td><td>Completeness · accuracy · timeliness + alerts</td></tr>
+          <tr><td>Monitoring</td><td>Centralized hub across all domains + envs</td></tr>
+          <tr><td>Deliverables</td><td>10 pipelines · templates · docs · training · migration plan</td></tr>
+          <tr><td>Timeline</td><td>~16 weeks (proposed)</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Additional requirements from vendor</h3>
+      <div class="card-content">
+        <ul>
+          <li>AWS account access: Glue, Step Functions, Lake Formation, Redshift Serverless enabled</li>
+          <li>Source system credentials &amp; connectivity <strong>by end of Week 1</strong></li>
+          <li>Named [Firm] stakeholders with defined time commitment</li>
+          <li>Bedrock model access for AI-augmented delivery</li>
+          <li>Collaboration tools (Slack/Teams, Jira, Confluence) provisioned Wk 1</li>
+        </ul>
+        <p class="muted" style="margin-top:10px;"><strong class="sea">Source system access is the #1 risk (R1)</strong> — Day-1 checklist + synthetic data fallback.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 5b: ADR Index ═══ -->
+<section>
+  <h2>Architecture Decisions at a Glance</h2>
+  <p class="slide-sub">14 ADRs in MADR format — Context · Decision · Alternatives · Consequences · <code>docs/architecture/adr/</code></p>
+  <div class="content-center">
+    <table class="small">
+      <tr><th>#</th><th>Decision</th><th>Choice</th></tr>
+      <tr><td>001</td><td>Cloud provider</td><td class="mint">AWS</td></tr>
+      <tr><td>002</td><td>Open table format</td><td class="mint">Apache Iceberg</td></tr>
+      <tr><td>003</td><td>CDC pattern</td><td>DMS (RDBMS) · S3 events (files) · Kinesis (stream)</td></tr>
+      <tr><td>004</td><td>Schema registry + contracts</td><td>JSON Schema in Git + CI-enforced SemVer</td></tr>
+      <tr><td>005</td><td>DR strategy</td><td>Multi-AZ + CRR · RPO 1h / RTO 4h</td></tr>
+      <tr><td>006</td><td>DQ engine</td><td>Great Expectations (GX) · Glue DQ fallback</td></tr>
+      <tr><td>007</td><td>Orchestration</td><td>AWS Step Functions</td></tr>
+      <tr><td>008</td><td>Lineage</td><td>OpenLineage + Marquez + Spark agent</td></tr>
+      <tr><td>009</td><td>Catalog / marketplace</td><td>AWS DataZone</td></tr>
+      <tr><td>010</td><td>Geospatial</td><td class="mint">GeoParquet + H3 + spatial ER</td></tr>
+      <tr><td>011</td><td>Access control boundary</td><td>Lake Formation authoritative · IAM for services · LF deny wins</td></tr>
+      <tr><td>012</td><td>MDM / entity resolution</td><td>AWS Entity Resolution + Zingg · shared Gold dims</td></tr>
+      <tr><td>013</td><td>Data observability</td><td>CW Anomaly Detection + Soda Core</td></tr>
+      <tr><td>014</td><td>Retention by classification</td><td>Public 30d · Internal 1y · Confidential 3y · Restricted 7y + legal hold</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 6: C4 Context ═══ -->
+<section>
+  <h2>Solution Architecture — C4 Context</h2>
+  <div class="diagram-row">
+    <div class="diagram-box">
+<pre class="mermaid">
+flowchart LR
+  subgraph firm["[Firm] Enterprise"]
+    crm[CRM]
+    erp[ERPs]
+    hris[HRIS]
+    files[Files<br/>CSV/Excel/SFTP]
+    edp[EDP<br/>Enterprise Data Platform]
+  end
+  analyst[Data Analyst]
+  engineer[Data Engineer]
+  admin[Platform Admin]
+  exec[Business Leader]
+  analytics[BI · QuickSight<br/>Tableau · Power BI]
+  ml[ML / SageMaker]
+  slack[Slack / Email]
+
+  crm --> edp
+  erp --> edp
+  hris --> edp
+  files --> edp
+  edp --> analytics
+  edp --> ml
+  edp --> slack
+  exec --> analytics
+  analyst --> edp
+  engineer --> edp
+  admin --> edp
+</pre>
+    </div>
+    <div class="card">
+      <h3>Key points</h3>
+      <div class="card-content">
+        <ul>
+          <li>EDP is the central hub — 4 source types in, 3 consumer types out</li>
+          <li>4 personas self-serve at different depths</li>
+          <li>Alerts flow to Slack/Email via SNS + PagerDuty</li>
+          <li>Every data journey passes one consistent quality + governance layer</li>
+        </ul>
+        <p class="muted" style="margin-top:8px;">Full diagrams: <code>docs/architecture/c4-context.mmd</code></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 7: C4 Container (AWS) ═══ -->
+<section>
+  <h2>Solution Architecture — AWS Container View</h2>
+  <div class="content-center">
+    <table class="small">
+      <tr><th>Layer</th><th>AWS services</th></tr>
+      <tr><td class="mint">Ingestion</td><td>AWS Glue (PySpark/Python) · Lambda · Step Functions · DMS (CDC)</td></tr>
+      <tr><td class="mint">Storage (Medallion)</td><td>S3 Bronze · Silver · Gold — <strong>Apache Iceberg</strong> on Silver/Gold</td></tr>
+      <tr><td class="mint">Catalog</td><td>Glue Data Catalog + AWS DataZone (marketplace)</td></tr>
+      <tr><td class="mint">Query / Analytics</td><td>Amazon Athena (serverless SQL) · Redshift Serverless (BI)</td></tr>
+      <tr><td class="mint">Data Quality</td><td>Great Expectations (Lambda Python 3.12) + Glue DQ fallback</td></tr>
+      <tr><td class="mint">Observability</td><td>CloudWatch · X-Ray · OpenLineage + Marquez · React Dashboard · Grafana</td></tr>
+      <tr><td class="mint">Security</td><td>Lake Formation · IAM · KMS · CloudTrail · Macie · VPC + endpoints</td></tr>
+      <tr><td class="mint">CI/CD + AI</td><td>GitHub Actions · CodeBuild · Amazon Bedrock (Claude) · DynamoDB (saga)</td></tr>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <p class="muted">All serverless or managed — no EC2 instances to maintain. Full diagram: <code>docs/architecture/c4-container.mmd</code> · PNG in <code>docs/architecture/c4/</code></p>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 8: Domain Template ═══ -->
+<section>
+  <h2>Domain Template — One Terraform Apply, One Domain</h2>
+  <p class="slide-sub"><code>terraform apply -var domain_name=sales -var environment=dev</code> provisions:</p>
+  <div class="two-col">
+    <div class="card">
+      <h3>What gets provisioned</h3>
+      <div class="card-content">
+        <ul>
+          <li>3 S3 buckets (raw · curated · published) with KMS</li>
+          <li>3 Glue Catalog databases + crawler</li>
+          <li>Athena workgroup OR Redshift Serverless namespace</li>
+          <li>Step Functions pipeline skeleton (parameterized)</li>
+          <li>5 IAM roles (Admin · Engineer · Analyst · Pipeline · Monitoring)</li>
+          <li>Lake Formation permissions (table + column level)</li>
+          <li>CloudWatch namespace + SNS alert topic</li>
+          <li>DataZone project registration</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Why this matters</h3>
+      <div class="card-content">
+        <h4 class="mint">New domain in &lt; 1 hour · not weeks</h4>
+        <p>Consistent naming, security, monitoring from Day 1. Self-serve post-handoff.</p>
+        <h4 class="sea" style="margin-top:10px;">The template IS the product</h4>
+        <p>Adding Domain 3, 4, 5 is trivial after we build the template. Post-handoff team onboards a new domain without us.</p>
+        <p class="muted" style="margin-top:8px;">Validated in Phase 3 when Domain 2 is provisioned from the same template.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 9: Medallion ═══ -->
+<section>
+  <h2>Data Architecture — Medallion Tiers</h2>
+  <div class="content-center">
+    <table class="small">
+      <tr><th>Tier</th><th>Purpose</th><th>Format</th><th>DQ gate</th><th>Access</th></tr>
+      <tr>
+        <td class="mint"><strong>Bronze (Raw)</strong></td>
+        <td>Faithful source copy · immutable · append-only</td>
+        <td>Source-native + metadata sidecar (CRS, schema ver)</td>
+        <td>Schema existence · PII classification at arrival (Macie)</td>
+        <td>Data Engineers</td>
+      </tr>
+      <tr>
+        <td class="mint"><strong>Silver (Curated)</strong></td>
+        <td>Cleansed · typed · deduplicated · normalized · PII-masked · CRS-reprojected</td>
+        <td>Iceberg + GeoParquet for spatial</td>
+        <td>Completeness ≥ 95% · accuracy · schema · spatial (CRS, topology)</td>
+        <td>Data Engineers</td>
+      </tr>
+      <tr>
+        <td class="mint"><strong>Gold (Published)</strong></td>
+        <td>Business-ready aggregates · enriched · cross-domain linkages · SCD2 dims</td>
+        <td>Iceberg + GeoParquet · time-travel enabled</td>
+        <td>Completeness ≥ 99% · timeliness SLO · business rules</td>
+        <td>Analysts · Business</td>
+      </tr>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <p><strong class="sea">Promotion rule</strong> — data only moves to next tier after passing DQ gate. Failed records → <code>rejected/</code> (PII scrubbed). Per-tier retention per ADR-014.</p>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 9b: Geo-Data Specialization ═══ -->
+<section>
+  <h2>Geo-Data Specialization for [Firm]</h2>
+  <p class="slide-sub">Spatial is the product, not a feature — ADR-010</p>
+  <div class="content-center">
+    <table class="small">
+      <tr><th>Concern</th><th>Decision</th></tr>
+      <tr><td>Storage format (Silver/Gold)</td><td class="mint"><strong>GeoParquet 1.1</strong> with explicit CRS metadata</td></tr>
+      <tr><td>Default storage CRS</td><td>EPSG:4326 (WGS84) · local grids (BNG, UTM) preserved when required</td></tr>
+      <tr><td>Spatial indexing</td><td class="mint"><strong>H3</strong> resolutions 7 · 9 · 12 pre-computed in Silver</td></tr>
+      <tr><td>Cross-dataset spatial identity</td><td><code>dim_spatial_entity</code> · deterministic + probabilistic (H3-12 proximity + fuzzy name) · ADR-012</td></tr>
+      <tr><td>Raster (imagery/DEM)</td><td>Out of scope for initial 10 · COG + AWS Open Data in migration plan</td></tr>
+      <tr><td>Consumer interfaces</td><td>Athena <code>ST_*</code> UDFs · Redshift Serverless <code>GEOMETRY</code> · tile server (future)</td></tr>
+      <tr><td>Spatial DQ checks</td><td>CRS conformance · topology validity · bounding-box · H3 correctness</td></tr>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <p><strong class="mint">Consumers don't re-project, re-index, or re-resolve identity on every query.</strong> Same well / asset / structure reconciled once across CRM · ERP · survey.</p>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 10: Governance ═══ -->
+<section>
+  <h2>Data Governance &amp; Operating Model</h2>
+  <p class="slide-sub">Domain-centric governance — Data Mesh principles, federated + centralized</p>
+  <div class="two-col">
+    <div class="card">
+      <h3>Mesh principles</h3>
+      <div class="card-content">
+        <table class="tiny">
+          <tr><th>Principle</th><th>Implementation</th></tr>
+          <tr><td>Domain ownership</td><td>Each domain owns data products end-to-end</td></tr>
+          <tr><td>Data as a product</td><td>Gold tables: documented, versioned, SLA-bound, subscribable via DataZone</td></tr>
+          <tr><td>Self-serve platform</td><td>Terraform templates + <code>edp_common</code> + CI/CD + AI agents</td></tr>
+          <tr><td>Federated governance</td><td>Central standards enforced via templates + CI gates + contract registry</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Operating model (post-handoff)</h3>
+      <div class="card-content">
+        <p>Recommended steady-state team: <strong class="sea">1 Platform Engineer + 2 Data Engineers</strong></p>
+        <ul>
+          <li>Pipeline onboarding (5/sprint with templates + agents)</li>
+          <li>DQ threshold tuning per domain</li>
+          <li>Monitoring + anomaly triage</li>
+          <li>Champion per domain — adoption, office hours</li>
+        </ul>
+        <h4 class="mint" style="margin-top:10px;">Governance artifacts (all in repo)</h4>
+        <ul>
+          <li>Project Charter · CR Template · Comms Plan</li>
+          <li>Quality Mgmt Plan · Stakeholder Register</li>
+          <li>Benefits Realization · Lessons Learned Log</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 11: Data Quality ═══ -->
+<section>
+  <h2>Data Quality Framework</h2>
+  <p class="slide-sub">Three RFP-mandated dimensions — GX primary, Glue DQ fallback (ADR-006)</p>
+  <div class="content-center">
+    <table>
+      <tr><th>Dimension</th><th>Checks</th><th>Example</th></tr>
+      <tr><td class="mint"><strong>Completeness</strong></td><td>Null rates · row counts · schema validation</td><td><code>customer_email</code> is never null; row count ±5% vs. source</td></tr>
+      <tr><td class="mint"><strong>Accuracy</strong></td><td>FK validity · regex · statistical distribution</td><td>phone matches E.164; revenue in expected range</td></tr>
+      <tr><td class="mint"><strong>Timeliness</strong></td><td>SLA adherence · freshness</td><td>pipeline completes by 06:00 UTC</td></tr>
+    </table>
+    <p style="margin-top:12px;"><strong class="sea">Pipeline integration:</strong> <code>Ingest → [DQ Gate] → Transform → [DQ Gate] → Publish → [DQ Gate] → Notify</code></p>
+    <p class="muted">On failure — configurable per pipeline: halt · quarantine · continue with warning. Results → S3 + DynamoDB for trend analysis. Visualized on React dashboard.</p>
+    <p class="mint" style="margin-top:10px;"><strong>Data observability (ADR-013):</strong> CW Anomaly Detection on volume/distribution + Soda Core nightly on Gold — catches drifts GX rules miss.</p>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 12: Monitoring ═══ -->
+<section>
+  <h2>Monitoring &amp; Observability — Four Pillars</h2>
+  <div class="four-col" style="flex:1; min-height:0; align-content:center;">
+    <div class="card card-center">
+      <h4 class="sea">Structured Logging</h4>
+      <p>JSON logs · correlation IDs · CloudWatch Log Insights · centralized cross-env hub</p>
+      <span class="badge sea">Pillar 1</span>
+    </div>
+    <div class="card card-center">
+      <h4 class="mint">Metrics</h4>
+      <p>30+ custom CloudWatch metrics · business + infra + cost + SLO</p>
+      <span class="badge mint">Pillar 2</span>
+    </div>
+    <div class="card card-center">
+      <h4 class="lilac">Tracing</h4>
+      <p>AWS X-Ray · Lambda → Step Functions → API Gateway · E2E pipeline traces</p>
+      <span class="badge lilac">Pillar 3</span>
+    </div>
+    <div class="card card-center">
+      <h4 class="sky">Alerting</h4>
+      <p>CW Alarms → SNS → Email · Slack · PagerDuty · auto-remediation</p>
+      <span class="badge sky">Pillar 4</span>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <p><strong class="mint">React Monitoring Dashboard</strong> — pipeline view · DQ scorecard · cross-domain hub · lineage DAG (Marquez).
+    <strong class="sea">Domain health score</strong> = 0.4·DQ + 0.3·freshness + 0.2·success + 0.1·(1-cost_anom).</p>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 12b: NFRs & SLOs ═══ -->
+<section>
+  <h2>Non-Functional Requirements &amp; SLOs</h2>
+  <p class="slide-sub">Every NFR is measurable · <code>docs/architecture/nfr-slo-matrix.md</code></p>
+  <div class="content-center">
+    <table class="small">
+      <tr><th>Category</th><th>Headline target</th></tr>
+      <tr><td>Performance</td><td>Athena p95 ≤ 10s · Redshift BI p95 ≤ 5s · ingest ≥ 50 MB/s bulk</td></tr>
+      <tr><td>Freshness (Gold)</td><td>≤ 60 min end-to-end (standard) · daily SLO ≤ 06:00 UTC</td></tr>
+      <tr><td>Availability</td><td>Gold read <strong class="mint">99.9%</strong> · Monitoring UI/API <strong class="mint">99.5%</strong></td></tr>
+      <tr><td>RPO / RTO (Gold)</td><td><strong class="mint">RPO 1h / RTO 4h</strong> via CRR + Iceberg snapshots (ADR-005)</td></tr>
+      <tr><td>Security</td><td>0 critical vulns at deploy · 0 public buckets · PII classified ≤ 15 min post-ingest</td></tr>
+      <tr><td>Quality</td><td>Gold completeness ≥ 99% · anomaly-alert actioned ≥ 80% within 24h</td></tr>
+      <tr><td>Cost</td><td>≤ $0.05 per GB processed · monthly spend ≤ $18K steady-state</td></tr>
+      <tr><td>Dev experience</td><td>PR cycle p95 ≤ 3 days · new domain provision ≤ 1 hour</td></tr>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <p class="muted">Error budgets computed monthly · tracked in monitoring hub · breach → SteerCo escalation.</p>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 13: AI Acceleration ═══ -->
+<section>
+  <h2>AI Acceleration Strategy</h2>
+  <p class="slide-sub">Two layers — Claude Code for humans · automated agents for repeatable tasks</p>
+  <div class="content-center">
+    <table class="small">
+      <tr><th>Agent</th><th>Purpose</th><th>Trigger</th></tr>
+      <tr><td class="mint">pipeline-generator</td><td>Generate Glue jobs · Step Functions · DQ suites from spec</td><td>Manual</td></tr>
+      <tr><td class="mint">pr-reviewer</td><td>Multi-pass: security · quality · architecture · cost</td><td>PR event</td></tr>
+      <tr><td class="mint">test-generator</td><td>pytest fixtures · moto mocks · synthetic data</td><td>Manual</td></tr>
+      <tr><td class="mint">doc-generator</td><td>Auto-generate pipeline docs · data dictionaries</td><td>Weekly</td></tr>
+      <tr><td class="mint">terraform-reviewer</td><td>Checkov · cost estimation · best practices</td><td>PR with <code>/infra/</code></td></tr>
+      <tr><td class="mint">schema-validator</td><td>Validate Glue Catalog schema changes against contracts</td><td>Pre-merge</td></tr>
+      <tr><td class="mint">dq-tuner</td><td>Analyze DQ history · suggest threshold adjustments</td><td>Weekly</td></tr>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <p><strong class="sea">Production-grade</strong> — 7 agents · max 3 retries · duplicate prevention · input validation · human escalation. <strong class="mint">ROI: ~$8K AI cost → ~$38-51K labor savings = 4-6×.</strong></p>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 14: CI/CD ═══ -->
+<section>
+  <h2>CI/CD &amp; DevOps</h2>
+  <div class="two-col">
+    <div class="card">
+      <h3>GitHub Actions workflows</h3>
+      <div class="card-content">
+        <table class="tiny">
+          <tr><th>Workflow</th><th>Trigger</th><th>Checks</th></tr>
+          <tr><td>Terraform CI</td><td>PR · <code>/infra/</code></td><td>fmt · validate · tflint · checkov · plan</td></tr>
+          <tr><td>Python CI</td><td>PR · <code>/pipelines/</code></td><td>ruff · mypy · pytest</td></tr>
+          <tr><td>React CI</td><td>PR · <code>/monitoring-app/</code></td><td>eslint · vitest · build</td></tr>
+          <tr><td>Contract CI</td><td>PR · <code>/contracts/</code></td><td>SemVer enforcement · consumer signoff · DQ alignment</td></tr>
+          <tr><td>AI PR review</td><td>Any PR</td><td>5-pass automated review</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Environment promotion</h3>
+      <div class="card-content">
+        <p class="mint"><code>feature → DEV (auto) → TST (manual + QA) → PRD (approval gate)</code></p>
+        <h4 class="sea" style="margin-top:10px;">Security</h4>
+        <ul>
+          <li>GitHub OIDC → AWS · no long-lived keys</li>
+          <li>Secrets in AWS Secrets Manager · not GitHub</li>
+          <li>Branch protection + CODEOWNERS enforcement</li>
+        </ul>
+        <h4 class="mint" style="margin-top:10px;">Data contracts CI gate</h4>
+        <p class="muted">JSON Schema diff → SemVer check → consumer signoff YAML required for MAJOR bumps. <code>docs/architecture/data-contract-ci-gate.md</code></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 15: Security ═══ -->
+<section>
+  <h2>Security &amp; Access Control</h2>
+  <div class="content-center">
+    <table class="small">
+      <tr><th>Area</th><th>Implementation</th></tr>
+      <tr><td>Network</td><td>VPC · private subnets · VPC endpoints (no public internet for data services)</td></tr>
+      <tr><td>Encryption</td><td>SSE-KMS at rest · TLS 1.2+ in transit · KMS CMK per environment</td></tr>
+      <tr><td>Access model</td><td><strong class="mint">Lake Formation authoritative for data</strong> (table/column) · IAM for service/API · LF deny wins (ADR-011)</td></tr>
+      <tr><td>RBAC roles (per domain)</td><td>DomainAdmin · DataEngineer · DataAnalyst · PipelineExecution · MonitoringReadOnly</td></tr>
+      <tr><td>Data classification</td><td>Macie at Bronze ingest · 4 tiers (Public · Internal · Confidential · Restricted) · tags drive access + retention</td></tr>
+      <tr><td>Audit</td><td>CloudTrail (all regions) · S3 access logging · Object Lock (WORM) audit bucket</td></tr>
+      <tr><td>Vulnerability scanning</td><td>Dependabot · pip-audit · npm audit · Trivy — zero critical at deploy</td></tr>
+      <tr><td>GDPR</td><td>Right-to-erasure subject-level delete · 30-day RTO · legal hold hook</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 15a: End-to-End User Journey ═══ -->
+<section>
+  <h2>End-to-End User Journey</h2>
+  <p class="slide-sub">A Monday 90 days post-handoff — 4 personas, one platform, one connected story</p>
+  <div class="journey-timeline">
+    <div class="journey-row">
+      <div class="time">08:00</div>
+      <div>
+        <div class="who">Business Leader opens exec dashboard</div>
+        <div class="what">Sees Q3 regional variance flagged <span style="color:#ff6b6b">RED</span> · clicks into domain health card</div>
+      </div>
+    </div>
+    <div class="journey-row">
+      <div class="time">08:15</div>
+      <div>
+        <div class="who">Data Analyst receives "investigate variance"</div>
+        <div class="what">Queries Gold in Athena · follows DataZone link to dataset docs · spots anomaly alert (-22% records_processed) · opens lineage DAG</div>
+      </div>
+    </div>
+    <div class="journey-row">
+      <div class="time">08:40</div>
+      <div>
+        <div class="who">Data Engineer pulled in on lineage trace</div>
+        <div class="what">Lineage shows Silver transform upstream · Step Functions history: DQ check passed · CW Anomaly confirms distribution shift · files ticket, opens PR for tighter expectation</div>
+      </div>
+    </div>
+    <div class="journey-row">
+      <div class="time">09:05</div>
+      <div>
+        <div class="who">Platform Admin triages ticket</div>
+        <div class="what">Runbook in Git · auto-remediation Lambda restarts upstream source sync · pipeline replays from Iceberg snapshot · dashboard returns <span style="color:#00FFF0">GREEN</span> by 09:30</div>
+      </div>
+    </div>
+    <div class="journey-row">
+      <div class="time">09:45</div>
+      <div>
+        <div class="who">Business Leader re-opens dashboard</div>
+        <div class="what">Variance now contextualized: upstream sync delay, recovered · confidence restored · decision proceeds · <span class="mint">feedback loop</span>: "add this as recurring check"</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <p><strong class="sea">90 minutes</strong> · every capability mapped to an ADR or deliverable · no heroics.</p>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 15b: MVP / Thin Slice ═══ -->
+<section>
+  <h2>MVP / Thin-Slice Strategy</h2>
+  <p class="slide-sub">One pipeline · end-to-end · real [Firm] data · by Week 6. Everything after is repetition at scale.</p>
+  <div class="steps-list">
+    <div class="step">
+      <div class="step-num sea">0</div>
+      <div class="step-body">
+        <h4 class="sea">Wk 1-2 · Discovery</h4>
+        <p>Domain selection · source inventory · ADRs · access checklist</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num sky">1</div>
+      <div class="step-body">
+        <h4 class="sky">Wk 3-5 · Foundation</h4>
+        <p>Infrastructure · CI/CD · <code>edp_common</code> library</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num mint">2</div>
+      <div class="step-body">
+        <h4 class="mint">Wk 6 · === REFERENCE PIPELINE LIVE DEMO === · MVP</h4>
+        <p>Real source → Bronze → DQ → Silver → DQ → Gold → dashboard. Executive sponsor sees working software at the 40% mark.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num lilac">3</div>
+      <div class="step-body">
+        <h4 class="lilac">Wk 7-12 · Scale</h4>
+        <p>Pipelines 2-10 · pattern replication · cross-domain hub</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num snow">4</div>
+      <div class="step-body">
+        <h4 class="snow">Wk 13-16 · Harden &amp; Handoff</h4>
+        <p>Security hardening · training · migration plan · formal sign-off</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <p class="muted"><strong class="sea">Risk compression</strong> — every major unknown resolved by Wk 6, not Wk 14.</p>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 16: Delivery Approach ═══ -->
+<section>
+  <h2>Delivery Approach</h2>
+  <p class="slide-sub">Agile (Scrum) with phase-gated milestones · 2-week sprints · 8 sprints across 16 weeks</p>
+  <div class="two-col">
+    <div class="card">
+      <h3>Sprint cadence</h3>
+      <div class="card-content">
+        <table class="tiny">
+          <tr><th>Ceremony</th><th>Cadence</th><th>Duration</th></tr>
+          <tr><td>Sprint planning</td><td>Bi-weekly Mon</td><td>1h</td></tr>
+          <tr><td>Daily standup</td><td>Daily</td><td>15 min</td></tr>
+          <tr><td>Sprint demo</td><td>Bi-weekly Fri</td><td>1h</td></tr>
+          <tr><td>Retrospective</td><td>Bi-weekly Fri</td><td>30 min</td></tr>
+          <tr><td>Backlog refinement</td><td>Weekly Wed</td><td>30 min</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Governance cadence</h3>
+      <div class="card-content">
+        <table class="tiny">
+          <tr><th>Artifact</th><th>Cadence</th></tr>
+          <tr><td>Exec async brief</td><td>Weekly · Fri · ≤ 250 words</td></tr>
+          <tr><td>Decision SteerCo</td><td>Bi-weekly · 30 min</td></tr>
+          <tr><td>Phase-gate go/no-go</td><td>End of each phase · formal</td></tr>
+          <tr><td>Risk review</td><td>Bi-weekly · bundled with SteerCo</td></tr>
+          <tr><td>Quality metrics</td><td>Weekly · in brief</td></tr>
+        </table>
+        <p class="muted" style="margin-top:8px;">Full plan: <code>docs/governance/communications-plan.md</code></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 17: Roadmap ═══ -->
+<section>
+  <h2>Delivery Roadmap — 16 Weeks · 5 Phases</h2>
+  <div class="content-center">
+    <table class="small">
+      <tr><th>Phase</th><th>Weeks</th><th>Focus</th><th>Exit criteria (highlights)</th></tr>
+      <tr><td class="mint">0 · Discovery</td><td>1-2</td><td>Align scope · select domains</td><td>Domains signed · 10 pipelines documented · ADRs · access</td></tr>
+      <tr><td class="mint">1 · Foundation</td><td>3-6</td><td>Infra + CI/CD</td><td>Terraform provisions domain · CI/CD green · <code>edp_common</code> live</td></tr>
+      <tr><td class="mint">2 · Domain 1</td><td>5-10</td><td>Reference pipeline + 5 pipelines + DQ</td><td>5 pipelines in DEV · DQ suites pass · monitoring API live</td></tr>
+      <tr><td class="mint">3 · Domain 2 + Monitoring</td><td>9-14</td><td>Pipelines 6-10 · cross-domain · hub</td><td>All 10 in TST · cross-domain queries · Domain 2 provisioned in &lt; 1h</td></tr>
+      <tr><td class="mint">4 · Handoff</td><td>13-16</td><td>Security · docs · training</td><td>All 10 in PRD · 0 critical vulns · 3 training sessions · migration plan</td></tr>
+    </table>
+    <p style="margin-top:14px;"><strong class="sea">Critical path:</strong> source access (wk 1-2) → <code>edp_common</code> (wk 3-5) → reference pipeline (wk 6-7) → Domain 2 (wk 9-12) → PRD (wk 15). <strong class="mint">2-week schedule reserve</strong> held by DM.</p>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 18: Team ═══ -->
+<section>
+  <h2>Team Structure — Central Europe, Offshore</h2>
+  <div class="content-center">
+    <table class="small">
+      <tr><th>Role</th><th>Seniority</th><th>Focus</th></tr>
+      <tr><td>Delivery Manager</td><td>Senior</td><td>Governance · risk · client comms · scrum master</td></tr>
+      <tr><td>Solution Architect</td><td>Lead</td><td>Technical design · ADRs · data modeling · spatial strategy</td></tr>
+      <tr><td>Platform / DevOps Engineer</td><td>Senior</td><td>Terraform · GitHub Actions · AWS infra · security hardening</td></tr>
+      <tr><td>Data Engineer 1</td><td>Senior</td><td>Python · <code>edp_common</code> · reference pipeline · patterns</td></tr>
+      <tr><td>Data Engineer 2</td><td>Mid</td><td>Pipeline development · DQ suite authoring</td></tr>
+      <tr><td>Full-Stack Developer</td><td>Senior</td><td>React dashboard · FastAPI · Cognito auth</td></tr>
+      <tr><td>QA Engineer</td><td>Senior</td><td>Test automation · E2E · UAT coordination</td></tr>
+      <tr><td>Technical Writer</td><td>Mid</td><td>Documentation · training materials · runbooks</td></tr>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <p><strong class="sea">Peak team</strong> — 7 people (Wk 5-12) · <strong class="mint">AI augmentation</strong> — each role paired with Claude Code (30-50% productivity gain).</p>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 19: Client stakeholders ═══ -->
+<section>
+  <h2>Client Stakeholders &amp; Time Commitment</h2>
+  <p class="slide-sub">Per RFP §10.1c — required [Firm]-side roles</p>
+  <div class="content-center">
+    <table class="small">
+      <tr><th>Role</th><th>Count</th><th>Hrs/week</th><th>Peak</th></tr>
+      <tr><td>Executive Sponsor</td><td>1</td><td>1-2</td><td>Phase 0 · Phase 4 · phase gates</td></tr>
+      <tr><td>Data Platform Lead</td><td>1</td><td>4-6</td><td>All phases — primary contact</td></tr>
+      <tr><td>Domain Data Owner</td><td>2</td><td>4 each</td><td>Phase 1 · Phase 2</td></tr>
+      <tr><td>IT / Security Lead</td><td>1</td><td>2-4</td><td>Phase 0 · Phase 3-4</td></tr>
+      <tr><td>QA / UAT Team</td><td>2-3</td><td>8 in P3-4</td><td>Wk 13-14</td></tr>
+      <tr><td>Training Attendees</td><td>6-10</td><td>Half-day × 3</td><td>Wk 16</td></tr>
+    </table>
+    <p style="margin-top:12px;"><strong class="sea">Total client commitment:</strong> ~20-30 hrs/week across all roles. Full detail: <code>docs/risk/client-stakeholders.md</code></p>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 20: Resource plan ═══ -->
+<section>
+  <h2>Resource Plan — T&amp;M Staffing</h2>
+  <p class="slide-sub">100% allocation when on · clear ramp-up and ramp-down · no fractional FTEs</p>
+  <div class="content-center">
+    <table class="small">
+      <tr><th>Role</th><th>Start</th><th>End</th><th>Weeks</th><th>Person-Days</th></tr>
+      <tr><td>Delivery Manager</td><td>Wk 1</td><td>Wk 16</td><td>16</td><td class="mint">80</td></tr>
+      <tr><td>Solution Architect</td><td>Wk 1</td><td>Wk 14 (+50% Wk 15-16)</td><td>14 + tail</td><td class="mint">70 + 10</td></tr>
+      <tr><td>Platform / DevOps Engineer</td><td>Wk 1</td><td>Wk 16</td><td>16</td><td class="mint">80</td></tr>
+      <tr><td>Data Engineer 1 (Senior)</td><td>Wk 1</td><td>Wk 16</td><td>16</td><td class="mint">80</td></tr>
+      <tr><td>Data Engineer 2 (Mid)</td><td>Wk 3</td><td>Wk 12</td><td>10</td><td class="mint">50</td></tr>
+      <tr><td>Full-Stack Developer</td><td>Wk 5</td><td>Wk 16</td><td>12</td><td class="mint">60</td></tr>
+      <tr><td>QA Engineer</td><td>Wk 5</td><td>Wk 16</td><td>12</td><td class="mint">60</td></tr>
+      <tr><td>Technical Writer</td><td>Wk 13</td><td>Wk 16</td><td>4</td><td class="mint">20</td></tr>
+      <tr><td colspan="4"><strong>Total priced PD</strong> (WBS = 295 PD · uplift baked into day rate)</td><td class="mint"><strong>500</strong></td></tr>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <p><strong class="sea">Peak</strong> 7 people (Wk 5-12) · <strong class="mint">Rate card:</strong> EPAM &amp; CAPG Central Europe · full reconciliation in <code>docs/delivery/wbs.md</code></p>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 21: Risk Management ═══ -->
+<section>
+  <h2>Risk Management — Top 10 (EPAM RDM format)</h2>
+  <div class="content-center">
+    <table class="tiny">
+      <tr><th>#</th><th>Risk</th><th>I</th><th>P</th><th>Exp</th><th>Treatment</th></tr>
+      <tr><td>R1</td><td>Source system access delays</td><td>H</td><td>H</td><td class="mint"><strong>High</strong></td><td>Day-1 checklist · synthetic data fallback · Sponsor escalation</td></tr>
+      <tr><td>R2</td><td>Domain selection exceeds 2 weeks</td><td>H</td><td>M</td><td class="mint"><strong>High</strong></td><td>Pre-populated priority matrix · 5-day timebox · escalation</td></tr>
+      <tr><td>R3</td><td>AWS account SCP restrictions</td><td>H</td><td>M</td><td class="mint"><strong>High</strong></td><td>Day-1 SCP review · smoke test · alternative service list</td></tr>
+      <tr><td>R8</td><td>Client stakeholder availability</td><td>H</td><td>M</td><td class="mint"><strong>High</strong></td><td>Named RACI · weekly decision mtg · 48h Slack SLA · escalation</td></tr>
+      <tr><td>R10</td><td>AI-generated code quality</td><td>H</td><td>M</td><td class="mint"><strong>High</strong></td><td>Multi-pass PR review · CODEOWNERS · reference pipeline human-built</td></tr>
+      <tr><td>R4</td><td>Data volumes exceed estimates</td><td>M</td><td>M</td><td>Med</td><td>CDC patterns (DMS) · DPU caps · Glue Flex · AWS Budgets alerts</td></tr>
+      <tr><td>R6</td><td>Key team member departure</td><td>H</td><td>L</td><td>Med</td><td>Pair programming · ADRs · IaC-only · bi-weekly KT review</td></tr>
+      <tr><td>R7</td><td>Scope creep</td><td>M</td><td>H</td><td>Med</td><td>SOW boundaries · 4-tier CR process · migration plan for overflow</td></tr>
+      <tr><td>R9</td><td>Bedrock model access delays</td><td>M</td><td>M</td><td>Med</td><td>Submit Phase 0 · Anthropic API fallback · config-switchable</td></tr>
+      <tr><td>R5</td><td>GX / Glue Python incompatibility</td><td>M</td><td>L</td><td>Low</td><td>Run GX in Lambda 3.12 · Glue DQ fallback · ADR-006</td></tr>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <p><strong class="sea">5 High · 4 Medium · 1 Low</strong> — all mitigated · full register in <code>docs/risk/risk-register.md</code></p>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 22: ROM ═══ -->
+<section>
+  <h2>ROM Financial Proposal</h2>
+  <p class="slide-sub">Time &amp; Materials · Central Europe rates · rate card locked for 16 weeks</p>
+  <div class="two-col">
+    <div class="card">
+      <h3>Labor (500 PD · $326K)</h3>
+      <div class="card-content">
+        <table class="tiny">
+          <tr><th>Role</th><th>PD</th><th>Cost</th></tr>
+          <tr><td>Delivery Manager</td><td>80</td><td>$64,000</td></tr>
+          <tr><td>Solution Architect</td><td>70 + 10</td><td>$70,400</td></tr>
+          <tr><td>Platform Eng</td><td>80</td><td>$48,000</td></tr>
+          <tr><td>Data Eng 1</td><td>80</td><td>$48,000</td></tr>
+          <tr><td>Data Eng 2</td><td>50</td><td>$26,800</td></tr>
+          <tr><td>Full-Stack</td><td>60</td><td>$36,000</td></tr>
+          <tr><td>QA</td><td>60</td><td>$32,160</td></tr>
+          <tr><td>Tech Writer</td><td>20</td><td>$9,600</td></tr>
+          <tr><td><strong>Total labor</strong></td><td><strong>~510</strong></td><td class="mint"><strong>~$335K</strong></td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Non-labor + contingency</h3>
+      <div class="card-content">
+        <table class="tiny">
+          <tr><th>Line</th><th>Low</th><th>High</th></tr>
+          <tr><td>AWS infra (4 mo)</td><td>$32,000</td><td>$60,000</td></tr>
+          <tr><td>AI (Bedrock + Claude Code)</td><td>$7,440</td><td>$8,440</td></tr>
+          <tr><td>Tooling &amp; licenses</td><td>$0</td><td>$12,000</td></tr>
+          <tr><td>Travel (optional)</td><td>$5,000</td><td>$10,000</td></tr>
+          <tr><td>Contingency (10% labor)</td><td>$32,616</td><td>$32,616</td></tr>
+        </table>
+        <p style="margin-top:8px;"><strong class="mint">Total ROM: $403K – $449K</strong></p>
+        <p class="muted" style="margin-top:8px;">AI ROI: ~$8K spend → ~$38-51K labor savings = <strong>4-6×</strong>. Client-facing ROI: 2.5-5× post-handoff pipeline velocity.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 23: Assumptions ═══ -->
+<section>
+  <h2>Assumptions &amp; Dependencies</h2>
+  <div class="two-col">
+    <div class="card">
+      <h3>Key assumptions</h3>
+      <div class="card-content">
+        <ul>
+          <li>AWS accounts + SSO provisioned by end of Wk 1</li>
+          <li>Source system credentials available by end of Wk 2</li>
+          <li>Named client stakeholders with time commitment pre-kickoff</li>
+          <li>10 pipelines / 2 domains scope (SC-01)</li>
+          <li>Source volumes ≤ 500 GB full · 50 GB/day incremental (SC-02)</li>
+          <li>Bedrock model access approved in client AWS account</li>
+          <li>No code freezes or major holidays in 16-week window</li>
+          <li>T&amp;M — actuals billed monthly · rates locked · no LDs</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Critical-path dependencies</h3>
+      <div class="card-content">
+        <table class="tiny">
+          <tr><th>Phase</th><th>Depends on (client)</th></tr>
+          <tr><td>Phase 1</td><td>AWS account access · IT/Security</td></tr>
+          <tr><td>Phase 2</td><td>Domain selection complete · source access · domain owner engagement</td></tr>
+          <tr><td>Phase 3</td><td>Domain 2 source access · cross-domain business rules</td></tr>
+          <tr><td>Phase 4</td><td>UAT team available · training attendees scheduled</td></tr>
+        </table>
+        <p class="muted" style="margin-top:8px;">Full log: <code>docs/risk/assumptions.md</code> · 25+ assumptions with validation dates.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 24: Migration Strategy ═══ -->
+<section>
+  <h2>Migration Strategy — Post-Engagement</h2>
+  <p class="slide-sub">We don't create dependency — we build the platform, tools, and knowledge so [Firm] continues independently.</p>
+  <div class="two-col">
+    <div class="card">
+      <h3>What we hand over</h3>
+      <div class="card-content">
+        <ul>
+          <li>Reusable Terraform templates</li>
+          <li><code>edp_common</code> Python library</li>
+          <li>10 proven pipeline patterns across 2 domains</li>
+          <li>14 ADRs explaining every choice</li>
+          <li>Trained [Firm] team + champions per domain</li>
+          <li>7 AI agents for accelerated development</li>
+          <li>Full governance pack (7 docs)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Migration approach (remaining pipelines)</h3>
+      <div class="card-content">
+        <table class="tiny">
+          <tr><th>Step</th><th>Who</th><th>Timeline</th></tr>
+          <tr><td>Inventory + T-shirt size</td><td>Delivered in DOC-008</td><td>End of engagement</td></tr>
+          <tr><td>Prioritize into waves</td><td>[Firm] Platform Lead</td><td>Month 1 post-handoff</td></tr>
+          <tr><td>Execute via templates + agents</td><td>[Firm] team (+ optional retainer)</td><td>2-4 wk per wave</td></tr>
+          <tr><td>Validate + promote</td><td>[Firm] QA</td><td>Per wave</td></tr>
+        </table>
+        <p class="mint" style="margin-top:8px;"><strong>Post-handoff velocity: ~5 pipelines / 2-week sprint</strong> (2-eng team with templates + agents) vs. 1-2 greenfield.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 24b: Adoption Plan ═══ -->
+<section>
+  <h2>Adoption Plan — Making It Their Platform</h2>
+  <p class="slide-sub">Training is necessary · not sufficient · adoption is a 90-day product rollout</p>
+  <div class="diagram-row">
+    <div class="card">
+      <h3>Model</h3>
+      <div class="card-content">
+        <ul>
+          <li><strong class="mint">Champions</strong> — 1 per domain, co-builds ≥ 1 pipeline</li>
+          <li><strong class="mint">Beta cohort</strong> — Wk 6 onwards · sees platform before formal training</li>
+          <li><strong class="mint">Office hours</strong> — weekly (first 8 wk post) → bi-weekly → monthly</li>
+          <li><strong class="mint">Slack community</strong> — <code>#edp-community</code> from kickoff · EPAM read-only for 90 days post</li>
+          <li><strong class="mint">Docs in Git</strong> — PR-able artifacts · content stays current</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <h3>KPIs · 30 / 60 / 90 days post-handoff</h3>
+      <div class="card-content">
+        <table class="tiny">
+          <tr><th>KPI</th><th>30d</th><th>60d</th><th>90d</th></tr>
+          <tr><td>Unique Gold queriers</td><td>≥ 10</td><td>≥ 25</td><td>≥ 50</td></tr>
+          <tr><td>New pipelines by client</td><td>0</td><td>≥ 2</td><td>≥ 5</td></tr>
+          <tr><td>DQ alerts SLA-triaged</td><td>≥ 70%</td><td>≥ 80%</td><td>≥ 90%</td></tr>
+          <tr><td>Champion docs/PRs</td><td>≥ 1</td><td>≥ 3</td><td>≥ 5</td></tr>
+        </table>
+        <p class="muted" style="margin-top:8px;"><strong>Red flags:</strong> &lt; 5 queriers by day 60 · 0 new pipelines by day 90 · DQ backlog &gt; 10 · champion attrition → intervention via Sponsor.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 25: References ═══ -->
+<section>
+  <h2>Reference Projects</h2>
+  <p class="slide-sub">Anonymized · full case studies under NDA · additional Microsoft-stack refs in Appendix B</p>
+  <div class="three-col">
+    <div class="card">
+      <h3>Enterprise Data Lake</h3>
+      <div class="card-content">
+        <p class="mint">[Industry sector]</p>
+        <ul>
+          <li><strong>Scope:</strong> 50+ pipelines · 6 domains · AWS cloud-native</li>
+          <li><strong>Stack:</strong> S3, Glue, Step Functions, Athena, Lake Formation</li>
+          <li><strong>Duration:</strong> 20 weeks · team of 8</li>
+          <li><strong>Outcome:</strong> 70% reduction in data prep time · unified analytics</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Data Platform Migration</h3>
+      <div class="card-content">
+        <p class="mint">[Industry sector]</p>
+        <ul>
+          <li><strong>Scope:</strong> On-prem DWH → AWS · 100+ sources · Medallion</li>
+          <li><strong>Stack:</strong> Redshift, Glue, S3, CloudWatch</li>
+          <li><strong>Duration:</strong> 6 months · team of 12</li>
+          <li><strong>Outcome:</strong> 40% cost reduction · 3× query perf</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Real-Time Analytics</h3>
+      <div class="card-content">
+        <p class="mint">[Industry sector]</p>
+        <ul>
+          <li><strong>Scope:</strong> Event-driven architecture · sub-second latency</li>
+          <li><strong>Stack:</strong> EventBridge, Kinesis, Lambda, DynamoDB, QuickSight</li>
+          <li><strong>Duration:</strong> 14 weeks · team of 6</li>
+          <li><strong>Outcome:</strong> Real-time dashboards for executive decisioning</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 26: Q&A ═══ -->
+<section>
+  <div class="title-center">
+    <h1>Thank You</h1>
+    <p class="subtitle">Questions &amp; Discussion</p>
+    <p class="tagline" style="margin-top:24px;">Artsiom Kharytonchyk · Delivery Manager</p>
+    <p class="tech">Supporting documents &amp; full detail available in this repository</p>
+    <p class="date">WBS · Risk Register · ROM · RACI · Assumptions · Stakeholder Register · 14 ADRs · Governance Pack · NFR/SLO Matrix · Contract CI Gate · Domain Health Score</p>
+  </div>
+</section>
+
+<!-- ═══ APPENDIX B: Microsoft Reference Projects ═══ -->
+<section>
+  <h2>Appendix B · Microsoft-Stack Reference Projects</h2>
+  <p class="slide-sub">Per RFP §10.3a · anonymized · full case studies available on request under NDA</p>
+  <div class="three-col">
+    <div class="card">
+      <h3>Fabric Data Platform Migration</h3>
+      <div class="card-content">
+        <p class="mint">[Industry sector]</p>
+        <ul>
+          <li><strong>Scope:</strong> On-prem SQL + SSIS → Fabric Lakehouse · 80+ pipelines · 4 domains</li>
+          <li><strong>Stack:</strong> Fabric (OneLake, DF, Notebooks), Purview, Power BI</li>
+          <li><strong>Duration:</strong> 24 weeks · team of 10</li>
+          <li><strong>Outcome:</strong> 60% batch window reduction · unified Power BI semantic model</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Synapse + Databricks</h3>
+      <div class="card-content">
+        <p class="mint">[Industry sector]</p>
+        <ul>
+          <li><strong>Scope:</strong> Greenfield analytics · 50+ pipelines · real-time + batch</li>
+          <li><strong>Stack:</strong> Synapse SQL · Databricks (Delta) · Event Hubs · ADF</li>
+          <li><strong>Duration:</strong> 18 weeks · team of 8</li>
+          <li><strong>Outcome:</strong> Sub-second BI on 10 TB Gold · ~35% cost optimization</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Purview + Power BI Adoption</h3>
+      <div class="card-content">
+        <p class="mint">[Industry sector]</p>
+        <ul>
+          <li><strong>Scope:</strong> Enterprise governance rollout · 200+ datasets · 30+ pipelines</li>
+          <li><strong>Stack:</strong> Purview · Power BI · Azure AD</li>
+          <li><strong>Duration:</strong> 12 weeks · team of 5</li>
+          <li><strong>Outcome:</strong> 70% fewer "where's the data?" tickets · GDPR attestation readiness</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <p class="muted">Microsoft Fabric / Azure variant of this proposal available with delta ROM within 1 week of request.</p>
+  </div>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    transition: 'fade',
+    transitionSpeed: 'default',
+    backgroundTransition: 'fade',
+    width: 1280,
+    height: 720,
+    margin: 0.04,
+    center: false,
+    controls: true,
+    controlsLayout: 'bottom-right',
+    controlsBackArrows: 'faded',
+    progress: true,
+    slideNumber: 'c/t',
+    showSlideNumber: 'all',
+    plugins: []
+  });
+
+  // Suppress chrome on the title slide for a cleaner opening
+  Reveal.on('slidechanged', () => {
+    const idx = Reveal.getIndices().h;
+    const top = document.querySelector('.deck-chrome-top');
+    const bot = document.querySelector('.deck-chrome-bottom');
+    if (top) top.style.opacity = idx === 0 ? '0' : '1';
+    if (bot) bot.style.opacity = idx === 0 ? '0' : '1';
+  });
+  Reveal.on('ready', () => {
+    const idx = Reveal.getIndices().h;
+    const top = document.querySelector('.deck-chrome-top');
+    const bot = document.querySelector('.deck-chrome-bottom');
+    if (top) { top.style.transition = 'opacity 600ms ease'; top.style.opacity = idx === 0 ? '0' : '1'; }
+    if (bot) { bot.style.transition = 'opacity 600ms ease'; bot.style.opacity = idx === 0 ? '0' : '1'; }
+
+    // Move the slide counter into the .controls aside, between the two
+    // navigation arrows, so all three share one flex strip + one baseline.
+    const controls  = document.querySelector('.reveal .controls');
+    const slideNum  = document.querySelector('.reveal .slide-number');
+    const navRight  = document.querySelector('.reveal .controls .navigate-right');
+    if (controls && slideNum && navRight && !controls.contains(slideNum)) {
+      controls.insertBefore(slideNum, navRight);
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+---
+title: "C4 L3 Component Diagram - Reference Pipeline (end-to-end)"
+---
+flowchart TB
+    classDef component fill:#1a73e8,color:#fff,stroke:#0d47a1,stroke-width:1px
+    classDef store fill:#b45309,color:#fff,stroke:#7c2d12,stroke-width:1px
+    classDef quarantine fill:#b91c1c,color:#fff,stroke:#7f1d1d,stroke-width:1px
+    classDef external fill:#6b7280,color:#fff,stroke:#374151,stroke-width:1px
+    classDef observer fill:#2d6a4f,color:#fff,stroke:#14532d,stroke-width:1px
+
+    subgraph external_layer["External Systems"]
+        source["Source system<br/>(CRM/ERP/HRIS/File)"]:::external
+        bi["BI / Analyst consumer"]:::external
+        ml["ML / SageMaker consumer"]:::external
+    end
+
+    subgraph ingest["Ingest"]
+        connector["IngestConnector<br/>edp_common.ingest<br/>(API | JDBC | File | DMS-CDC)"]:::component
+        schema_v["SchemaValidator<br/>edp_common.schema<br/>(JSON Schema contract v{N})"]:::component
+        bronze_writer["BronzeWriter<br/>append-only partitioned<br/>metadata sidecar (CRS, version)"]:::component
+    end
+
+    subgraph bronze["Bronze Tier"]
+        s3_bronze["S3 Bronze<br/>source-native format"]:::store
+        macie["Macie PII Scanner<br/>(SEC-005a, classification tags)"]:::component
+    end
+
+    subgraph silver["Silver Transform"]
+        sfn_silver["Step Functions<br/>silver-stage state machine"]:::component
+        silver_xform["SilverTransformer<br/>type cast, dedupe, normalize<br/>CRS re-project, H3 index"]:::component
+        pii_mask["PIIMasker / Tokenizer<br/>edp_common.pii"]:::component
+        silver_dq["DQRunner (GX Lambda)<br/>completeness 95%, accuracy, schema<br/>+ spatial: CRS, topology, bbox"]:::component
+        quarantine_silver["QuarantineHandler<br/>scrub PII -> rejected/"]:::quarantine
+    end
+
+    subgraph silver_store["Silver Store"]
+        s3_silver["S3 Silver (Iceberg + GeoParquet)"]:::store
+    end
+
+    subgraph gold["Gold Build"]
+        sfn_gold["Step Functions<br/>gold-stage state machine"]:::component
+        gold_xform["GoldBuilder<br/>aggregations, SCD2 dims, enrich"]:::component
+        mdm["EntityResolver<br/>dim_customer / dim_asset<br/>dim_spatial_entity"]:::component
+        gold_dq["DQRunner (GX Lambda)<br/>completeness 99%, timeliness<br/>business rules"]:::component
+        gold_publisher["GoldPublisher<br/>Iceberg MERGE INTO<br/>contract re-validation"]:::component
+    end
+
+    subgraph gold_store["Gold Store"]
+        s3_gold["S3 Gold (Iceberg + GeoParquet)"]:::store
+        glue_catalog["Glue Catalog<br/>+ DataZone metadata"]:::store
+    end
+
+    subgraph obs["Observability Emitters"]
+        lineage["LineageEmitter<br/>edp_common.lineage<br/>OpenLineage -> Marquez"]:::observer
+        metrics["MetricsEmitter<br/>CloudWatch custom metrics"]:::observer
+        logs["StructuredLogger<br/>JSON + correlation IDs"]:::observer
+        contract_cache["ContractRegistry<br/>DynamoDB"]:::store
+    end
+
+    subgraph alerting["Alerting"]
+        anomaly["CW Anomaly Detection<br/>+ Soda Core nightly"]:::component
+        sns_alerts["SNS -> Slack/Email/PagerDuty"]:::component
+    end
+
+    source --> connector
+    connector --> schema_v
+    schema_v -->|"valid"| bronze_writer
+    schema_v -.->|"invalid"| quarantine_silver
+    bronze_writer --> s3_bronze
+    s3_bronze --> macie
+    macie -.->|"classification tags"| s3_bronze
+
+    s3_bronze --> sfn_silver
+    sfn_silver --> silver_xform
+    silver_xform --> pii_mask
+    pii_mask --> silver_dq
+    silver_dq -->|"pass"| s3_silver
+    silver_dq -.->|"fail"| quarantine_silver
+
+    s3_silver --> sfn_gold
+    sfn_gold --> gold_xform
+    gold_xform --> mdm
+    mdm --> gold_dq
+    gold_dq -->|"pass"| gold_publisher
+    gold_dq -.->|"fail, block publish"| sns_alerts
+    gold_publisher --> s3_gold
+    gold_publisher -.->|"contract check"| contract_cache
+    s3_gold --> glue_catalog
+
+    glue_catalog --> bi
+    s3_gold --> ml
+
+    connector -.-> lineage & metrics & logs
+    silver_xform -.-> lineage & metrics & logs
+    silver_dq -.-> lineage & metrics & logs
+    gold_xform -.-> lineage & metrics & logs
+    gold_dq -.-> lineage & metrics & logs
+    gold_publisher -.-> lineage & metrics & logs
+
+    metrics --> anomaly
+    anomaly --> sns_alerts
+
+    subgraph replay["Error & Replay Paths"]
+        replay_ctrl["ReplayController<br/>Step Functions<br/>(Iceberg snapshot -> re-run)"]:::component
+    end
+    quarantine_silver -.->|"triage -> fix -> replay"| replay_ctrl
+    replay_ctrl -.-> sfn_silver
+    replay_ctrl -.-> sfn_gold

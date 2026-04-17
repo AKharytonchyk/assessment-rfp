@@ -1,0 +1,38 @@
+@startuml c4-context
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title Enterprise Data Platform - System Context Diagram
+
+Person(business_user, "Business Leader", "Consumes insights dashboards, makes data-driven decisions")
+Person(data_analyst, "Data Analyst", "[Firm] analyst querying published data")
+Person(data_engineer, "Data Engineer", "[Firm] engineer building and maintaining pipelines")
+Person(platform_admin, "Platform Admin", "Manages infrastructure, access, monitoring")
+
+Enterprise_Boundary(firm, "[Firm] Enterprise") {
+    System(edp, "Enterprise Data Platform", "Domain-centric data platform on AWS. Ingests, transforms, validates, and publishes data for analytics.")
+
+    System_Ext(crm, "CRM System", "Customer relationship data (API)")
+    System_Ext(erp, "ERP Systems", "Financial & operational data (JDBC)")
+    System_Ext(hris, "HRIS", "Human resources data (API)")
+    System_Ext(files, "File Sources", "CSV exports, Excel workbooks, text files (S3/SFTP)")
+}
+
+System_Ext(analytics, "Analytics & BI Tools", "QuickSight, Tableau, Power BI, custom dashboards")
+System_Ext(ml, "ML/AI Workloads", "SageMaker, Bedrock, custom models")
+System_Ext(slack, "Slack / Email", "Alert notifications")
+
+Rel(crm, edp, "Feeds data via API")
+Rel(erp, edp, "Feeds data via JDBC")
+Rel(hris, edp, "Feeds data via API")
+Rel(files, edp, "Feeds files via S3/SFTP")
+
+Rel(edp, analytics, "Publishes Gold-tier data")
+Rel(edp, ml, "Provides curated datasets")
+Rel(edp, slack, "Sends alerts & notifications")
+
+Rel(business_user, analytics, "Views dashboards & reports")
+Rel(data_analyst, edp, "Queries via Athena/Redshift")
+Rel(data_engineer, edp, "Builds & monitors pipelines")
+Rel(platform_admin, edp, "Manages infrastructure & access")
+
+@enduml

@@ -1,0 +1,93 @@
+---
+title: "Data Flow - Medallion Architecture (Bronze -> Silver -> Gold)"
+---
+flowchart LR
+    subgraph sources["Source Systems"]
+        crm["CRM<br/>(API)"]
+        erp["ERP<br/>(JDBC)"]
+        hris["HRIS<br/>(API)"]
+        files["Files<br/>(S3/SFTP)"]
+    end
+
+    subgraph ingestion["Ingestion<br/>(edp_common library)"]
+        api_conn["API Connector<br/>requests + retry"]
+        jdbc_conn["JDBC Connector<br/>SQLAlchemy + pyodbc"]
+        file_conn["File Connector<br/>boto3 + pandas"]
+    end
+
+    subgraph bronze["BRONZE (Raw)"]
+        direction TB
+        s3_raw["S3: edp-{domain}-{env}-raw/<br/>{entity}/year=YYYY/month=MM/day=DD/"]
+        raw_format["Format: Source-native<br/>(JSON, CSV, Parquet, GeoJSON, WKT)<br/>+ metadata sidecar (source CRS, schema ver)"]
+        raw_schema["Schema: as-is from source<br/>No transformations"]
+        raw_dq["DQ Gate: Schema existence only<br/>Record ingestion timestamp"]
+        pii_scan["PII Scan (Macie + custom classifiers)<br/>Classification labels applied at Bronze arrival<br/>Tagged: Public | Internal | Confidential | Restricted"]
+    end
+
+    subgraph silver["SILVER (Curated)"]
+        direction TB
+        s3_curated["S3: edp-{domain}-{env}-curated/<br/>{entity}/ (GeoParquet for spatial)"]
+        curated_transforms["Transformations:<br/>- Type casting<br/>- Null handling<br/>- Deduplication<br/>- PII masking / tokenization<br/>- Timestamp normalization<br/>- Schema enforcement<br/>- CRS re-projection to EPSG:4326<br/>- H3 index compute (res 7/9/12)"]
+        curated_dq["DQ Gate (Great Expectations):<br/>- Completeness >= 95%<br/>- Accuracy checks (FK, regex)<br/>- Schema conformance<br/>- Spatial: CRS + topology + bbox<br/>FAIL -> quarantine to rejected/ (PII scrubbed)"]
+    end
+
+    subgraph gold["GOLD (Published)"]
+        direction TB
+        s3_published["S3: edp-{domain}-{env}-published/<br/>{entity}/ (GeoParquet + Iceberg)"]
+        gold_transforms["Transformations:<br/>- Aggregation & KPIs<br/>- Cross-domain joins<br/>- Business logic<br/>- SCD Type 2 dims<br/>- Enrichment<br/>- Spatial entity resolution<br/>  (dim_spatial_entity)"]
+        gold_dq["DQ Gate (Great Expectations):<br/>- Completeness >= 99%<br/>- Timeliness SLA check<br/>- Business rule validation<br/>FAIL -> alert + block publish"]
+    end
+
+    subgraph consumers["Consumers"]
+        athena["Athena<br/>(SQL queries)"]
+        redshift["Redshift<br/>(BI reports)"]
+        quicksight["QuickSight<br/>(Dashboards)"]
+        ml["ML Models<br/>(SageMaker)"]
+    end
+
+    crm --> api_conn
+    erp --> jdbc_conn
+    hris --> api_conn
+    files --> file_conn
+
+    api_conn --> s3_raw
+    jdbc_conn --> s3_raw
+    file_conn --> s3_raw
+
+    s3_raw --> pii_scan
+    pii_scan -.->|"Classification tags"| s3_raw
+
+    s3_raw -->|"Glue Job:<br/>Transform + Validate"| s3_curated
+    raw_dq -.->|"Pass"| curated_transforms
+
+    s3_curated -->|"Glue Job:<br/>Aggregate + Enrich"| s3_published
+    curated_dq -.->|"Pass"| gold_transforms
+
+    s3_published --> athena
+    s3_published --> redshift
+    redshift --> quicksight
+    s3_published --> ml
+
+    subgraph orchestration["Orchestration: Step Functions"]
+        sfn_flow["Ingest -> DQ Check -> Transform -> DQ Check -> Publish -> DQ Check -> Notify"]
+    end
+
+    orchestration -.->|"Controls"| ingestion
+    orchestration -.->|"Controls"| bronze
+    orchestration -.->|"Controls"| silver
+    orchestration -.->|"Controls"| gold
+
+    subgraph rejected["Quarantine"]
+        rejected_zone["S3: rejected/<br/>Bad records + DQ report<br/>Manual review required"]
+    end
+
+    curated_dq -.->|"Fail"| rejected_zone
+    gold_dq -.->|"Fail"| rejected_zone
+
+    style sources fill:#6b7280,color:#fff
+    style bronze fill:#b45309,color:#fff
+    style silver fill:#6b7280,color:#fff
+    style gold fill:#d97706,color:#fff
+    style consumers fill:#1a73e8,color:#fff
+    style orchestration fill:#6b21a8,color:#fff
+    style rejected fill:#b91c1c,color:#fff

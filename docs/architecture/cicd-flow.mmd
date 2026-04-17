@@ -1,0 +1,92 @@
+---
+title: "CI/CD Pipeline - GitHub Actions + AWS"
+---
+flowchart TB
+    subgraph dev_workflow["Developer Workflow"]
+        dev["Developer<br/>(with Claude Code)"]
+        feature["Feature Branch<br/>feature/edp-{domain}-{entity}"]
+        pr["Pull Request"]
+    end
+
+    dev -->|"git push"| feature
+    feature -->|"Opens"| pr
+
+    subgraph ci_checks["CI Checks (on PR)"]
+        direction TB
+        subgraph terraform_ci["Terraform CI"]
+            tf_fmt["terraform fmt -check"]
+            tf_validate["terraform validate"]
+            tflint["tflint"]
+            checkov["checkov (security scan)"]
+            tf_plan["terraform plan<br/>(posted as PR comment)"]
+        end
+
+        subgraph python_ci["Python CI"]
+            ruff["ruff (lint)"]
+            mypy["mypy (type check)"]
+            pytest["pytest (unit tests)"]
+        end
+
+        subgraph react_ci["React CI"]
+            eslint["eslint"]
+            vitest["vitest (unit tests)"]
+            build["npm run build"]
+        end
+
+        subgraph ai_review["AI PR Review (CodeBuild)"]
+            pass1["Pass 1: Comment Resolver"]
+            pass2["Pass 2: Security Review"]
+            pass3["Pass 3: Data Quality Review"]
+            pass4["Pass 4: Architecture Review"]
+            pass5["Pass 5: Cost Review"]
+            dedup["Cross-pass Dedup<br/>+ Semantic Dedup (Haiku)"]
+        end
+    end
+
+    pr -->|"Triggers"| ci_checks
+    pass1 --> pass2 & pass3 & pass4 & pass5
+    pass2 & pass3 & pass4 & pass5 --> dedup
+
+    subgraph approval["Approval Gate"]
+        codeowners["CODEOWNERS Review"]
+        human_review["Human Review"]
+        merge["Merge to develop"]
+    end
+
+    ci_checks -->|"All pass"| approval
+    approval -->|"Approved"| merge
+
+    subgraph environments["Environment Promotion"]
+        direction LR
+        dev_env["DEV<br/>(auto-deploy on merge to develop)"]
+        tst_env["TST<br/>(manual trigger after QA sign-off)"]
+        prd_env["PRD<br/>(manual trigger + approval gate<br/>via GitHub Environments)"]
+    end
+
+    merge -->|"Auto"| dev_env
+    dev_env -->|"Manual trigger"| tst_env
+    tst_env -->|"Manual + approval"| prd_env
+
+    subgraph deploy_steps["Deployment (per environment)"]
+        tf_apply["terraform apply<br/>(infrastructure)"]
+        glue_deploy["Upload Glue job scripts<br/>to S3 artifacts bucket"]
+        lambda_deploy["Deploy Lambda functions<br/>(zip/layer update)"]
+        react_deploy["Build & deploy React app<br/>to S3 + CloudFront invalidation"]
+    end
+
+    dev_env --> deploy_steps
+
+    subgraph secrets["Secrets & Auth"]
+        oidc["GitHub OIDC Provider<br/>(no long-lived keys)"]
+        sm["AWS Secrets Manager<br/>(DB passwords, API keys)"]
+        gh_secrets["GitHub Environments<br/>(per-env protection rules)"]
+    end
+
+    oidc -.->|"Authenticates"| deploy_steps
+
+    style dev_workflow fill:#2d6a4f,color:#fff
+    style ci_checks fill:#1a73e8,color:#fff
+    style ai_review fill:#6b21a8,color:#fff
+    style approval fill:#d97706,color:#fff
+    style environments fill:#065f46,color:#fff
+    style secrets fill:#4a5568,color:#fff
