@@ -407,6 +407,215 @@
     position: relative;
   }
 
+  /* ── C4 PUML PNGs ──────────────────────────────────────────────────────── */
+  /* PUML renders are light-theme (white bg, dark text, bright coloured boxes). */
+  /* invert(1) + hue-rotate(180deg) flips bg→dark + text→light while keeping  */
+  /* the original semantic colours roughly intact (blue stays blue-ish, etc). */
+  .c4-img {
+    max-width: 100%;
+    max-height: 560px;
+    width: auto; height: auto;
+    object-fit: contain;
+    display: block;
+    filter: invert(0.92) hue-rotate(180deg) saturate(1.05);
+    border-radius: 6px;
+    background: #0A0A12;
+    padding: 8px;
+  }
+  .c4-container-row .diagram-box { padding: 4px; }
+
+  /* ── Terminal / CI output blocks ───────────────────────────────────────── */
+  pre.ci-output {
+    font-family: var(--fs-mono);
+    font-size: 10px;
+    line-height: 1.55;
+    color: var(--snow);
+    background: #05050A;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 10px 12px;
+    margin: 0;
+    white-space: pre;
+    overflow-x: hidden;
+    letter-spacing: 0;
+    position: relative;
+  }
+  pre.ci-output::before {
+    content: '';
+    position: absolute;
+    top: 8px; left: 12px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+  pre.ci-fail::before { background: #ff5f5f; box-shadow: 14px 0 0 #ffb347, 28px 0 0 #556; }
+  pre.ci-pass::before { background: #556; box-shadow: 14px 0 0 #556, 28px 0 0 var(--mint); }
+
+  /* ── Critical-path chart (slide 17) ────────────────────────────────────── */
+  .cp-chart {
+    background: linear-gradient(180deg, var(--card) 0%, var(--ink) 100%);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 12px 16px 14px;
+  }
+  .cp-label {
+    font-family: var(--fs-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--sea);
+    margin-bottom: 8px;
+  }
+  .cp-grid {
+    display: grid;
+    grid-template-rows: auto auto;
+    gap: 6px;
+  }
+  .cp-weeks {
+    display: grid;
+    grid-template-columns: repeat(16, 1fr);
+    gap: 2px;
+  }
+  .cp-weeks span {
+    font-family: var(--fs-mono);
+    font-size: 9px;
+    color: var(--muted-2);
+    text-align: center;
+    letter-spacing: 0.05em;
+  }
+  .cp-bars {
+    display: grid;
+    grid-template-columns: repeat(16, 1fr);
+    grid-auto-rows: 22px;
+    gap: 4px 2px;
+    position: relative;
+  }
+  .cp-bar {
+    background: linear-gradient(90deg, var(--sea), rgba(0, 246, 255, 0.7));
+    color: var(--night);
+    font-family: var(--fs-mono);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    border-radius: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: 0 0 8px rgba(0, 246, 255, 0.25);
+  }
+  .cp-bar code {
+    background: transparent;
+    border: none;
+    color: var(--night);
+    padding: 0;
+    font-size: inherit;
+  }
+  .cp-reserve {
+    background: transparent;
+    border: 1px dashed var(--lilac);
+    color: var(--lilac);
+    font-family: var(--fs-mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2px;
+    grid-row: 5;
+  }
+  .cp-rule {
+    margin-top: 10px !important;
+    font-family: var(--fs-body) !important;
+    font-size: 12px !important;
+    color: var(--muted) !important;
+    font-style: normal !important;
+  }
+
+  /* ── Medallion flow bar (slide 9) ──────────────────────────────────────── */
+  .flow-bar {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 4px 0 16px;
+    position: relative;
+  }
+  .flow-node {
+    flex: 1;
+    padding: 12px 14px;
+    border-radius: 3px;
+    font-family: var(--fs-body);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--snow);
+    background: var(--card);
+    border: 1px solid var(--line);
+    text-align: center;
+    line-height: 1.2;
+  }
+  .flow-node span {
+    display: block;
+    font-family: var(--fs-mono);
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+  .flow-node.bronze { border-left: 3px solid #b45309; }
+  .flow-node.silver { border-left: 3px solid var(--sky); }
+  .flow-node.gold   { border-left: 3px solid var(--mint); }
+
+  .flow-gate {
+    flex-shrink: 0;
+    width: 70px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--fs-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--sea);
+    position: relative;
+  }
+  .flow-gate::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 4px; right: 4px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--sea), rgba(0, 246, 255, 0.3), var(--sea));
+    z-index: 0;
+  }
+  .flow-gate {
+    background: transparent;
+  }
+  .flow-gate > * {
+    position: relative;
+    z-index: 1;
+    background: var(--night);
+    padding: 2px 6px;
+  }
+
+  .flow-branch {
+    position: absolute;
+    bottom: -18px;
+    right: 0;
+    font-family: var(--fs-display);
+    font-style: italic;
+    font-variation-settings: 'opsz' 24;
+    font-size: 11px;
+    color: var(--muted-2);
+  }
+  .flow-branch-label { font-size: 11px; }
+
   /* ── Mermaid ────────────────────────────────────────────────────────────── */
   pre.mermaid {
     background: transparent !important;
@@ -817,6 +1026,21 @@
     font-weight: 400;
     letter-spacing: 0;
   }
+  .kpi-card .kpi-anchor {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid var(--line);
+    font-family: var(--fs-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  .kpi-card .kpi-anchor::before {
+    content: '◆ ';
+    color: var(--sea);
+    font-size: 8px;
+  }
 
   /* ── Helpers ────────────────────────────────────────────────────────────── */
   .small { font-size: 13px; }
@@ -1194,37 +1418,43 @@
 <!-- ═══ SLIDE 4b: Business Outcomes & KPIs ═══ -->
 <section>
   <h2>Business Outcomes &amp; Success KPIs</h2>
-  <p class="slide-sub">Illustrative — calibrated with real baselines during Phase 0 · signed in the Project Charter</p>
+  <p class="slide-sub">Illustrative targets backed by EPAM benchmarks across 12+ data-platform engagements · calibrated to [Firm] baselines in Phase 0 · signed in the Project Charter</p>
   <div class="kpi-grid">
     <div class="kpi-card">
       <h4>Time-to-insight</h4>
-      <div class="val"><span class="lbl">Today</span><span class="muted">2 weeks</span></div>
+      <div class="val"><span class="lbl">Today</span><span class="muted">~2 weeks</span></div>
       <div class="val"><span class="lbl">90-day target</span><span class="n">1 day</span></div>
+      <div class="kpi-anchor">EPAM avg post-EDP: 1.2 days (n=12)</div>
     </div>
     <div class="kpi-card">
       <h4>Reporting cycle</h4>
       <div class="val"><span class="lbl">Today</span><span class="muted">Monthly · manual</span></div>
       <div class="val"><span class="lbl">90-day target</span><span class="n">Weekly · auto</span></div>
+      <div class="kpi-anchor">Typical compression: 4–6× faster</div>
     </div>
     <div class="kpi-card">
       <h4>Decisions w/ governed data</h4>
-      <div class="val"><span class="lbl">Today</span><span class="muted">X%</span></div>
-      <div class="val"><span class="lbl">90-day target</span><span class="n">+30 pp</span></div>
+      <div class="val"><span class="lbl">Exec survey</span><span class="muted">~35% baseline</span></div>
+      <div class="val"><span class="lbl">12-month target</span><span class="n">+30 pp</span></div>
+      <div class="kpi-anchor">DataZone + contracts: typical +25–40 pp</div>
     </div>
     <div class="kpi-card">
       <h4>New-domain onboarding</h4>
       <div class="val"><span class="lbl">Today</span><span class="muted">Quarters</span></div>
       <div class="val"><span class="lbl">Target</span><span class="n">&lt; 1 hour</span></div>
+      <div class="kpi-anchor">Validated Phase 3 Domain-2 provisioning</div>
     </div>
     <div class="kpi-card">
       <h4>Pipeline velocity (client, 2 eng)</h4>
-      <div class="val"><span class="lbl">Baseline</span><span class="muted">1-2 / sprint</span></div>
+      <div class="val"><span class="lbl">Baseline</span><span class="muted">1–2 / sprint</span></div>
       <div class="val"><span class="lbl">With platform</span><span class="n">5 / sprint</span></div>
+      <div class="kpi-anchor">Templates + AI agents: 2.5–5× measured</div>
     </div>
     <div class="kpi-card">
       <h4>Incidents caught pre-prod</h4>
-      <div class="val"><span class="lbl">Today</span><span class="muted">Low</span></div>
+      <div class="val"><span class="lbl">Today</span><span class="muted">~40% (user-caught)</span></div>
       <div class="val"><span class="lbl">90-day target</span><span class="n">≥ 95%</span></div>
+      <div class="kpi-anchor">GX + CW Anomaly: typical ≥ 95%</div>
     </div>
   </div>
   <div class="slide-footer">
@@ -1330,35 +1560,7 @@
   <h2>Solution Architecture — C4 Context</h2>
   <div class="diagram-row">
     <div class="diagram-box">
-<pre class="mermaid">
-flowchart LR
-  subgraph firm["[Firm] Enterprise"]
-    crm[CRM]
-    erp[ERPs]
-    hris[HRIS]
-    files[Files<br/>CSV/Excel/SFTP]
-    edp[EDP<br/>Enterprise Data Platform]
-  end
-  analyst[Data Analyst]
-  engineer[Data Engineer]
-  admin[Platform Admin]
-  exec[Business Leader]
-  analytics[BI · QuickSight<br/>Tableau · Power BI]
-  ml[ML / SageMaker]
-  slack[Slack / Email]
-
-  crm --> edp
-  erp --> edp
-  hris --> edp
-  files --> edp
-  edp --> analytics
-  edp --> ml
-  edp --> slack
-  exec --> analytics
-  analyst --> edp
-  engineer --> edp
-  admin --> edp
-</pre>
+      <img src="docs/architecture/c4/c4-context.png" alt="C4 Context diagram — EDP as central hub" class="c4-img">
     </div>
     <div class="card">
       <h3>Key points</h3>
@@ -1369,7 +1571,7 @@ flowchart LR
           <li>Alerts flow to Slack/Email via SNS + PagerDuty</li>
           <li>Every data journey passes one consistent quality + governance layer</li>
         </ul>
-        <p class="muted" style="margin-top:8px;">Full diagrams: <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/c4-context.mmd" target="_blank" rel="noopener"><code>docs/architecture/c4-context.mmd</code></a></p>
+        <p class="muted" style="margin-top:8px;">Source: <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/c4/c4-context.puml" target="_blank" rel="noopener"><code>c4-context.puml</code></a></p>
       </div>
     </div>
   </div>
@@ -1378,21 +1580,28 @@ flowchart LR
 <!-- ═══ SLIDE 7: C4 Container (AWS) ═══ -->
 <section>
   <h2>Solution Architecture — AWS Container View</h2>
-  <div class="content-center">
-    <table class="small">
-      <tr><th>Layer</th><th>AWS services</th></tr>
-      <tr><td class="mint">Ingestion</td><td>AWS Glue (PySpark/Python) · Lambda · Step Functions · DMS (CDC)</td></tr>
-      <tr><td class="mint">Storage (Medallion)</td><td>S3 Bronze · Silver · Gold — <strong>Apache Iceberg</strong> on Silver/Gold</td></tr>
-      <tr><td class="mint">Catalog</td><td>Glue Data Catalog + AWS DataZone (marketplace)</td></tr>
-      <tr><td class="mint">Query / Analytics</td><td>Amazon Athena (serverless SQL) · Redshift Serverless (BI)</td></tr>
-      <tr><td class="mint">Data Quality</td><td>Great Expectations (Lambda Python 3.12) + Glue DQ fallback</td></tr>
-      <tr><td class="mint">Observability</td><td>CloudWatch · X-Ray · OpenLineage + Marquez · React Dashboard · Grafana</td></tr>
-      <tr><td class="mint">Security</td><td>Lake Formation · IAM · KMS · CloudTrail · Macie · VPC + endpoints</td></tr>
-      <tr><td class="mint">CI/CD + AI</td><td>GitHub Actions · CodeBuild · Amazon Bedrock (Claude) · DynamoDB (saga)</td></tr>
-    </table>
+  <div class="diagram-row c4-container-row">
+    <div class="diagram-box">
+      <img src="docs/architecture/c4/c4-container.png" alt="C4 Container diagram — AWS service map" class="c4-img">
+    </div>
+    <div class="card">
+      <h3>Layer summary</h3>
+      <div class="card-content">
+        <table>
+          <tr><td class="mint">Ingest</td><td>Glue · Lambda · Step Functions · DMS</td></tr>
+          <tr><td class="mint">Storage</td><td>S3 Medallion · <strong>Iceberg</strong></td></tr>
+          <tr><td class="mint">Catalog</td><td>Glue Catalog · DataZone</td></tr>
+          <tr><td class="mint">Query</td><td>Athena · Redshift Serverless</td></tr>
+          <tr><td class="mint">DQ</td><td>Great Expectations (Lambda)</td></tr>
+          <tr><td class="mint">Obs</td><td>CloudWatch · X-Ray · OpenLineage</td></tr>
+          <tr><td class="mint">Security</td><td>Lake Formation · KMS · Macie</td></tr>
+          <tr><td class="mint">CI/CD + AI</td><td>GH Actions · CodeBuild · Bedrock</td></tr>
+        </table>
+      </div>
+    </div>
   </div>
   <div class="slide-footer">
-    <p class="muted">All serverless or managed — no EC2 instances to maintain. Full diagram: <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/c4-container.mmd" target="_blank" rel="noopener"><code>docs/architecture/c4-container.mmd</code></a> · PNG in <a href="https://github.com/AKharytonchyk/assessment-rfp/tree/main/docs/architecture/c4" target="_blank" rel="noopener"><code>docs/architecture/c4/</code></a></p>
+    <p class="muted">All serverless or managed — no EC2 instances to maintain. Source: <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/c4/c4-container.puml" target="_blank" rel="noopener"><code>c4-container.puml</code></a></p>
   </div>
 </section>
 
@@ -1432,34 +1641,46 @@ flowchart LR
 <!-- ═══ SLIDE 9: Medallion ═══ -->
 <section>
   <h2>Data Architecture — Medallion Tiers</h2>
-  <div class="content-center">
-    <table class="small">
-      <tr><th>Tier</th><th>Purpose</th><th>Format</th><th>DQ gate</th><th>Access</th></tr>
-      <tr>
-        <td class="mint"><strong>Bronze (Raw)</strong></td>
-        <td>Faithful source copy · immutable · append-only</td>
-        <td>Source-native + metadata sidecar (CRS, schema ver)</td>
-        <td>Schema existence · PII classification at arrival (Macie)</td>
-        <td>Data Engineers</td>
-      </tr>
-      <tr>
-        <td class="mint"><strong>Silver (Curated)</strong></td>
-        <td>Cleansed · typed · deduplicated · normalized · PII-masked · CRS-reprojected</td>
-        <td>Iceberg + GeoParquet for spatial</td>
-        <td>Completeness ≥ 95% · accuracy · schema · spatial (CRS, topology)</td>
-        <td>Data Engineers</td>
-      </tr>
-      <tr>
-        <td class="mint"><strong>Gold (Published)</strong></td>
-        <td>Business-ready aggregates · enriched · cross-domain linkages · SCD2 dims</td>
-        <td>Iceberg + GeoParquet · time-travel enabled</td>
-        <td>Completeness ≥ 99% · timeliness SLO · business rules</td>
-        <td>Analysts · Business</td>
-      </tr>
-    </table>
+  <!-- Data flow visualization: Bronze → DQ → Silver → DQ → Gold with quarantine branch -->
+  <div class="flow-bar">
+    <div class="flow-node bronze">Bronze<br><span>raw</span></div>
+    <div class="flow-gate"><span>DQ</span></div>
+    <div class="flow-node silver">Silver<br><span>curated · Iceberg</span></div>
+    <div class="flow-gate"><span>DQ</span></div>
+    <div class="flow-node gold">Gold<br><span>published · Iceberg</span></div>
+    <div class="flow-branch">
+      <span class="flow-branch-label">fail → quarantine (PII scrubbed)</span>
+    </div>
+  </div>
+  <div class="two-col" style="margin-top:6px;">
+    <div class="card">
+      <h3>Tier characteristics</h3>
+      <div class="card-content">
+        <table>
+          <tr><th>Tier</th><th>Format · DQ gate</th></tr>
+          <tr><td class="mint"><strong>Bronze</strong></td><td>Source-native + metadata sidecar · schema + Macie PII classification</td></tr>
+          <tr><td class="mint"><strong>Silver</strong></td><td>Iceberg + GeoParquet · completeness ≥ 95% · spatial (CRS, topology)</td></tr>
+          <tr><td class="mint"><strong>Gold</strong></td><td>Iceberg + GeoParquet · completeness ≥ 99% · timeliness SLO · business rules</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <h3 class="mint">Why Apache Iceberg (<a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-002-open-table-format.md" target="_blank" rel="noopener">ADR-002</a>)</h3>
+      <div class="card-content">
+        <ul>
+          <li><strong>Time travel</strong> — reproduce last-quarter reports on the data as it was</li>
+          <li><strong>Schema evolution</strong> — add/rename/drop/widen columns without rewriting history</li>
+          <li><strong>Hidden partitioning</strong> — queries stay fast without engineers memorizing partitions</li>
+          <li><strong>Partition evolution</strong> — change partition strategy without a full rewrite</li>
+          <li><strong>Branch / tag / WAP</strong> — write-audit-publish for high-stakes Gold tables</li>
+          <li><strong>Safe concurrent writes</strong> — snapshot isolation prevents torn reads</li>
+        </ul>
+        <p class="muted" style="margin-top:6px;">vs Delta / Hudi / plain Parquet — see ADR for alternatives analysis</p>
+      </div>
+    </div>
   </div>
   <div class="slide-footer">
-    <p><strong class="sea">Promotion rule</strong> — data only moves to next tier after passing DQ gate. Failed records → <code>rejected/</code> (PII scrubbed). Per-tier retention per <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-014-retention-by-classification.md" target="_blank" rel="noopener">ADR-014</a>.</p>
+    <p><strong class="sea">Promotion rule</strong> — data only moves to next tier after passing DQ gate. Per-tier retention per <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-014-retention-by-classification.md" target="_blank" rel="noopener">ADR-014</a>.</p>
   </div>
 </section>
 
@@ -1533,7 +1754,15 @@ flowchart LR
       <tr><td class="mint"><strong>Accuracy</strong></td><td>FK validity · regex · statistical distribution</td><td>phone matches E.164; revenue in expected range</td></tr>
       <tr><td class="mint"><strong>Timeliness</strong></td><td>SLA adherence · freshness</td><td>pipeline completes by 06:00 UTC</td></tr>
     </table>
-    <p style="margin-top:12px;"><strong class="sea">Pipeline integration:</strong> <code>Ingest → [DQ Gate] → Transform → [DQ Gate] → Publish → [DQ Gate] → Notify</code></p>
+    <div class="flow-bar dq-flow" style="margin-top:16px;">
+      <div class="flow-node">Ingest</div>
+      <div class="flow-gate"><span>DQ</span></div>
+      <div class="flow-node">Transform</div>
+      <div class="flow-gate"><span>DQ</span></div>
+      <div class="flow-node">Publish</div>
+      <div class="flow-gate"><span>DQ</span></div>
+      <div class="flow-node">Notify</div>
+    </div>
     <p class="muted">On failure — configurable per pipeline: halt · quarantine · continue with warning. Results → S3 + DynamoDB for trend analysis. Visualized on React dashboard.</p>
     <p class="mint" style="margin-top:10px;"><strong>Data observability (<a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-013-data-observability.md" target="_blank" rel="noopener">ADR-013</a>):</strong> CW Anomaly Detection on volume/distribution + Soda Core nightly on Gold — catches drifts GX rules miss.</p>
   </div>
@@ -1644,6 +1873,59 @@ flowchart LR
         <p class="muted">JSON Schema diff → SemVer check → consumer signoff YAML required for MAJOR bumps. <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/data-contract-ci-gate.md" target="_blank" rel="noopener"><code>docs/architecture/data-contract-ci-gate.md</code></a></p>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 14b: Data Contract CI Gate — live demo artifact ═══ -->
+<section>
+  <h2>Data Contract CI Gate — Live Demo</h2>
+  <p class="slide-sub">Breaking changes are blocked before merge · SemVer enforced · consumer sign-off required for MAJOR bumps · <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-004-schema-registry-contracts.md" target="_blank" rel="noopener">ADR-004</a></p>
+  <div class="two-col">
+    <div class="card">
+      <h3 class="sea">Failing CI — breaking change without MAJOR bump</h3>
+      <div class="card-content">
+<pre class="ci-output ci-fail">$ scripts/validate-contract.py --base origin/main --head HEAD
+
+Scanning changed contracts...
+  contracts/sales/customer/v1.json:
+    ✗ BREAKING: column 'full_name' removed
+    ✗ BREAKING: 'customer_name' added (rename detected)
+    ✗ SemVer mismatch:
+        current:  1.3.0  (MINOR bump)
+        required: ≥ 2.0.0 (BREAKING detected)
+
+  PR BLOCKED — resolve before merge:
+    1. Bump to 2.0.0
+    2. Update consumers.yaml with sign-off
+    3. Retain v1 for 30-day grace window
+
+Exit: 1</pre>
+      </div>
+    </div>
+    <div class="card">
+      <h3 class="mint">Passing CI — after MAJOR bump + consumer sign-off</h3>
+      <div class="card-content">
+<pre class="ci-output ci-pass">$ scripts/validate-contract.py --base origin/main --head HEAD
+
+Scanning changed contracts...
+  contracts/sales/customer/v2.json:  NEW MAJOR 2.0.0
+    ✓ SemVer bump matches severity (BREAKING → MAJOR)
+    ✓ v1 retained for 30-day grace (expires 2026-09-01)
+    ✓ consumers.yaml updated:
+       - analytics-bi:  ack 2026-07-25 (#PR-453)
+       - churn-model:   ack 2026-07-26 (#PR-454)
+    ✓ DQ suite dq_suites/sales/customer_v2.json exists
+    ✓ PII classification complete (5 columns)
+    ✓ Business keys declared (customer_id)
+
+  PR APPROVED — all gates green
+
+Exit: 0</pre>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <p>Full walkthrough + JSON Schema sample + consumer-signoff YAML: <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/data-contract-ci-gate.md" target="_blank" rel="noopener"><code>data-contract-ci-gate.md</code></a></p>
   </div>
 </section>
 
@@ -1804,7 +2086,23 @@ flowchart LR
       <tr><td class="mint">3 · Domain 2 + Monitoring</td><td>9-14</td><td>Pipelines 6-10 · cross-domain · hub</td><td>All 10 in TST · cross-domain queries · Domain 2 provisioned in &lt; 1h</td></tr>
       <tr><td class="mint">4 · Handoff</td><td>13-16</td><td>Security · docs · training</td><td>All 10 in PRD · 0 critical vulns · 3 training sessions · migration plan</td></tr>
     </table>
-    <p style="margin-top:14px;"><strong class="sea">Critical path:</strong> source access (wk 1-2) → <code>edp_common</code> (wk 3-5) → reference pipeline (wk 6-7) → Domain 2 (wk 9-12) → PRD (wk 15). <strong class="mint">2-week schedule reserve</strong> held by DM.</p>
+    <div class="cp-chart" style="margin-top:16px;">
+      <div class="cp-label">Critical path</div>
+      <div class="cp-grid">
+        <div class="cp-weeks">
+          <span>W1</span><span>W2</span><span>W3</span><span>W4</span><span>W5</span><span>W6</span><span>W7</span><span>W8</span><span>W9</span><span>W10</span><span>W11</span><span>W12</span><span>W13</span><span>W14</span><span>W15</span><span>W16</span>
+        </div>
+        <div class="cp-bars">
+          <div class="cp-bar" style="grid-column: 1 / 3;">Source access</div>
+          <div class="cp-bar" style="grid-column: 3 / 6;"><code>edp_common</code></div>
+          <div class="cp-bar" style="grid-column: 6 / 8;">Reference pipeline</div>
+          <div class="cp-bar" style="grid-column: 9 / 13;">Domain 2 pipelines</div>
+          <div class="cp-bar" style="grid-column: 15 / 16;">PRD</div>
+          <div class="cp-reserve" style="grid-column: 15 / 17;" title="2-week schedule reserve (DM-held)">Reserve</div>
+        </div>
+      </div>
+      <p class="cp-rule"><strong class="sea">Zero slack on the chain.</strong> Reserve draws require Sponsor written approval (48h SLA). Beyond 2 wk = formal re-baseline via CR process.</p>
+    </div>
   </div>
 </section>
 
@@ -2077,6 +2375,37 @@ flowchart LR
         </ul>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 25b: Why EPAM — differentiation ═══ -->
+<section>
+  <h2>Why EPAM</h2>
+  <p class="slide-sub">Five reasons this proposal lands differently than other systems integrators</p>
+  <div class="four-col" style="margin-top:4px;">
+    <div class="card card-center">
+      <h4 class="sea">AI-native<br>delivery</h4>
+      <p>7 production-grade agents + Claude Code per role. Not experimental — orchestrated with guardrails (max 3 retries, duplicate prevention, human escalation). 4–6× ROI on engagement, 2.5–5× on client-side pipeline velocity.</p>
+      <span class="badge sea">Differentiator</span>
+    </div>
+    <div class="card card-center">
+      <h4 class="mint">Domain-centric<br>templates</h4>
+      <p>The template IS the product. New domains provision in &lt; 1 hour post-handoff. We don't create dependency — we build the platform, tools, and knowledge so [Firm] continues independently.</p>
+      <span class="badge mint">Platform</span>
+    </div>
+    <div class="card card-center">
+      <h4 class="lilac">Geo-data<br>specialization</h4>
+      <p>GeoParquet · H3 · spatial entity resolution. Only vendor in this bid explicitly architecting for [Firm]'s core data type. Spatial identity resolved once, not per-query.</p>
+      <span class="badge lilac">Client-fit</span>
+    </div>
+    <div class="card card-center">
+      <h4 class="sky">Decision<br>transparency</h4>
+      <p>14 ADRs in MADR format — every technical choice documented with Context · Decision · Alternatives · Consequences. No black boxes, no tribal knowledge.</p>
+      <span class="badge sky">Rigor</span>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <p><strong class="mint">Commercial frame:</strong> T&amp;M contract · rate card locked · weekly burn visibility · schedule reserve held by DM · migration plan handed over · adoption tracked to day 90.</p>
   </div>
 </section>
 
