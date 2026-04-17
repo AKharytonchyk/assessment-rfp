@@ -1130,7 +1130,7 @@
     <div class="step">
       <div class="step-num sea">1</div>
       <div class="step-body">
-        <h4 class="sea">We propose AWS (ADR-001)</h4>
+        <h4 class="sea">We propose AWS (<a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-001-cloud-provider.md" target="_blank" rel="noopener">ADR-001</a>)</h4>
         <p>Service breadth: Glue · Lake Formation · Athena · Redshift Serverless · DataZone · Bedrock · Macie. Native in-region AI via Bedrock. EPAM CE bench depth on AWS data stack.</p>
       </div>
     </div>
@@ -1260,7 +1260,7 @@
           <li>Executive Sponsor signs the binding list</li>
           <li>Unselected → migration plan backlog (DOC-008)</li>
         </ol>
-        <p class="muted" style="margin-top:8px;">Full worksheet: <code>docs/delivery/pipeline-prioritization.md</code></p>
+        <p class="muted" style="margin-top:8px;">Full worksheet: <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/delivery/pipeline-prioritization.md" target="_blank" rel="noopener"><code>docs/delivery/pipeline-prioritization.md</code></a></p>
       </div>
     </div>
   </div>
@@ -1303,24 +1303,24 @@
 <!-- ═══ SLIDE 5b: ADR Index ═══ -->
 <section>
   <h2>Architecture Decisions at a Glance</h2>
-  <p class="slide-sub">14 ADRs in MADR format — Context · Decision · Alternatives · Consequences · <code>docs/architecture/adr/</code></p>
+  <p class="slide-sub">14 ADRs in MADR format — Context · Decision · Alternatives · Consequences · <a href="https://github.com/AKharytonchyk/assessment-rfp/tree/main/docs/architecture/adr" target="_blank" rel="noopener"><code>docs/architecture/adr/</code></a></p>
   <div class="content-center">
     <table class="small">
       <tr><th>#</th><th>Decision</th><th>Choice</th></tr>
-      <tr><td>001</td><td>Cloud provider</td><td class="mint">AWS</td></tr>
-      <tr><td>002</td><td>Open table format</td><td class="mint">Apache Iceberg</td></tr>
-      <tr><td>003</td><td>CDC pattern</td><td>DMS (RDBMS) · S3 events (files) · Kinesis (stream)</td></tr>
-      <tr><td>004</td><td>Schema registry + contracts</td><td>JSON Schema in Git + CI-enforced SemVer</td></tr>
-      <tr><td>005</td><td>DR strategy</td><td>Multi-AZ + CRR · RPO 1h / RTO 4h</td></tr>
-      <tr><td>006</td><td>DQ engine</td><td>Great Expectations (GX) · Glue DQ fallback</td></tr>
-      <tr><td>007</td><td>Orchestration</td><td>AWS Step Functions</td></tr>
-      <tr><td>008</td><td>Lineage</td><td>OpenLineage + Marquez + Spark agent</td></tr>
-      <tr><td>009</td><td>Catalog / marketplace</td><td>AWS DataZone</td></tr>
-      <tr><td>010</td><td>Geospatial</td><td class="mint">GeoParquet + H3 + spatial ER</td></tr>
-      <tr><td>011</td><td>Access control boundary</td><td>Lake Formation authoritative · IAM for services · LF deny wins</td></tr>
-      <tr><td>012</td><td>MDM / entity resolution</td><td>AWS Entity Resolution + Zingg · shared Gold dims</td></tr>
-      <tr><td>013</td><td>Data observability</td><td>CW Anomaly Detection + Soda Core</td></tr>
-      <tr><td>014</td><td>Retention by classification</td><td>Public 30d · Internal 1y · Confidential 3y · Restricted 7y + legal hold</td></tr>
+      <tr><td><a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-001-cloud-provider.md" target="_blank" rel="noopener">001</a></td><td>Cloud provider</td><td class="mint">AWS</td></tr>
+      <tr><td><a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-002-open-table-format.md" target="_blank" rel="noopener">002</a></td><td>Open table format</td><td class="mint">Apache Iceberg</td></tr>
+      <tr><td><a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-003-cdc-pattern.md" target="_blank" rel="noopener">003</a></td><td>CDC pattern</td><td>DMS (RDBMS) · S3 events (files) · Kinesis (stream)</td></tr>
+      <tr><td><a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-004-schema-registry-contracts.md" target="_blank" rel="noopener">004</a></td><td>Schema registry + contracts</td><td>JSON Schema in Git + CI-enforced SemVer</td></tr>
+      <tr><td><a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-005-dr-strategy.md" target="_blank" rel="noopener">005</a></td><td>DR strategy</td><td>Multi-AZ + CRR · RPO 1h / RTO 4h</td></tr>
+      <tr><td><a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-006-dq-engine.md" target="_blank" rel="noopener">006</a></td><td>DQ engine</td><td>Great Expectations (GX) · Glue DQ fallback</td></tr>
+      <tr><td><a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-007-orchestration.md" target="_blank" rel="noopener">007</a></td><td>Orchestration</td><td>AWS Step Functions</td></tr>
+      <tr><td><a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-008-lineage.md" target="_blank" rel="noopener">008</a></td><td>Lineage</td><td>OpenLineage + Marquez + Spark agent</td></tr>
+      <tr><td><a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-009-data-catalog-marketplace.md" target="_blank" rel="noopener">009</a></td><td>Catalog / marketplace</td><td>AWS DataZone</td></tr>
+      <tr><td><a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-010-geospatial-handling.md" target="_blank" rel="noopener">010</a></td><td>Geospatial</td><td class="mint">GeoParquet + H3 + spatial ER</td></tr>
+      <tr><td><a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-011-access-control-boundary.md" target="_blank" rel="noopener">011</a></td><td>Access control boundary</td><td>Lake Formation authoritative · IAM for services · LF deny wins</td></tr>
+      <tr><td><a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-012-mdm-entity-resolution.md" target="_blank" rel="noopener">012</a></td><td>MDM / entity resolution</td><td>AWS Entity Resolution + Zingg · shared Gold dims</td></tr>
+      <tr><td><a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-013-data-observability.md" target="_blank" rel="noopener">013</a></td><td>Data observability</td><td>CW Anomaly Detection + Soda Core</td></tr>
+      <tr><td><a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-014-retention-by-classification.md" target="_blank" rel="noopener">014</a></td><td>Retention by classification</td><td>Public 30d · Internal 1y · Confidential 3y · Restricted 7y + legal hold</td></tr>
     </table>
   </div>
 </section>
@@ -1369,7 +1369,7 @@ flowchart LR
           <li>Alerts flow to Slack/Email via SNS + PagerDuty</li>
           <li>Every data journey passes one consistent quality + governance layer</li>
         </ul>
-        <p class="muted" style="margin-top:8px;">Full diagrams: <code>docs/architecture/c4-context.mmd</code></p>
+        <p class="muted" style="margin-top:8px;">Full diagrams: <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/c4-context.mmd" target="_blank" rel="noopener"><code>docs/architecture/c4-context.mmd</code></a></p>
       </div>
     </div>
   </div>
@@ -1392,7 +1392,7 @@ flowchart LR
     </table>
   </div>
   <div class="slide-footer">
-    <p class="muted">All serverless or managed — no EC2 instances to maintain. Full diagram: <code>docs/architecture/c4-container.mmd</code> · PNG in <code>docs/architecture/c4/</code></p>
+    <p class="muted">All serverless or managed — no EC2 instances to maintain. Full diagram: <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/c4-container.mmd" target="_blank" rel="noopener"><code>docs/architecture/c4-container.mmd</code></a> · PNG in <a href="https://github.com/AKharytonchyk/assessment-rfp/tree/main/docs/architecture/c4" target="_blank" rel="noopener"><code>docs/architecture/c4/</code></a></p>
   </div>
 </section>
 
@@ -1459,21 +1459,21 @@ flowchart LR
     </table>
   </div>
   <div class="slide-footer">
-    <p><strong class="sea">Promotion rule</strong> — data only moves to next tier after passing DQ gate. Failed records → <code>rejected/</code> (PII scrubbed). Per-tier retention per ADR-014.</p>
+    <p><strong class="sea">Promotion rule</strong> — data only moves to next tier after passing DQ gate. Failed records → <code>rejected/</code> (PII scrubbed). Per-tier retention per <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-014-retention-by-classification.md" target="_blank" rel="noopener">ADR-014</a>.</p>
   </div>
 </section>
 
 <!-- ═══ SLIDE 9b: Geo-Data Specialization ═══ -->
 <section>
   <h2>Geo-Data Specialization for [Firm]</h2>
-  <p class="slide-sub">Spatial is the product, not a feature — ADR-010</p>
+  <p class="slide-sub">Spatial is the product, not a feature — <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-010-geospatial-handling.md" target="_blank" rel="noopener">ADR-010</a></p>
   <div class="content-center">
     <table class="small">
       <tr><th>Concern</th><th>Decision</th></tr>
       <tr><td>Storage format (Silver/Gold)</td><td class="mint"><strong>GeoParquet 1.1</strong> with explicit CRS metadata</td></tr>
       <tr><td>Default storage CRS</td><td>EPSG:4326 (WGS84) · local grids (BNG, UTM) preserved when required</td></tr>
       <tr><td>Spatial indexing</td><td class="mint"><strong>H3</strong> resolutions 7 · 9 · 12 pre-computed in Silver</td></tr>
-      <tr><td>Cross-dataset spatial identity</td><td><code>dim_spatial_entity</code> · deterministic + probabilistic (H3-12 proximity + fuzzy name) · ADR-012</td></tr>
+      <tr><td>Cross-dataset spatial identity</td><td><code>dim_spatial_entity</code> · deterministic + probabilistic (H3-12 proximity + fuzzy name) · <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-012-mdm-entity-resolution.md" target="_blank" rel="noopener">ADR-012</a></td></tr>
       <tr><td>Raster (imagery/DEM)</td><td>Out of scope for initial 10 · COG + AWS Open Data in migration plan</td></tr>
       <tr><td>Consumer interfaces</td><td>Athena <code>ST_*</code> UDFs · Redshift Serverless <code>GEOMETRY</code> · tile server (future)</td></tr>
       <tr><td>Spatial DQ checks</td><td>CRS conformance · topology validity · bounding-box · H3 correctness</td></tr>
@@ -1525,7 +1525,7 @@ flowchart LR
 <!-- ═══ SLIDE 11: Data Quality ═══ -->
 <section>
   <h2>Data Quality Framework</h2>
-  <p class="slide-sub">Three RFP-mandated dimensions — GX primary, Glue DQ fallback (ADR-006)</p>
+  <p class="slide-sub">Three RFP-mandated dimensions — GX primary, Glue DQ fallback (<a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-006-dq-engine.md" target="_blank" rel="noopener">ADR-006</a>)</p>
   <div class="content-center">
     <table>
       <tr><th>Dimension</th><th>Checks</th><th>Example</th></tr>
@@ -1535,7 +1535,7 @@ flowchart LR
     </table>
     <p style="margin-top:12px;"><strong class="sea">Pipeline integration:</strong> <code>Ingest → [DQ Gate] → Transform → [DQ Gate] → Publish → [DQ Gate] → Notify</code></p>
     <p class="muted">On failure — configurable per pipeline: halt · quarantine · continue with warning. Results → S3 + DynamoDB for trend analysis. Visualized on React dashboard.</p>
-    <p class="mint" style="margin-top:10px;"><strong>Data observability (ADR-013):</strong> CW Anomaly Detection on volume/distribution + Soda Core nightly on Gold — catches drifts GX rules miss.</p>
+    <p class="mint" style="margin-top:10px;"><strong>Data observability (<a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-013-data-observability.md" target="_blank" rel="noopener">ADR-013</a>):</strong> CW Anomaly Detection on volume/distribution + Soda Core nightly on Gold — catches drifts GX rules miss.</p>
   </div>
 </section>
 
@@ -1573,14 +1573,14 @@ flowchart LR
 <!-- ═══ SLIDE 12b: NFRs & SLOs ═══ -->
 <section>
   <h2>Non-Functional Requirements &amp; SLOs</h2>
-  <p class="slide-sub">Every NFR is measurable · <code>docs/architecture/nfr-slo-matrix.md</code></p>
+  <p class="slide-sub">Every NFR is measurable · <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/nfr-slo-matrix.md" target="_blank" rel="noopener"><code>docs/architecture/nfr-slo-matrix.md</code></a></p>
   <div class="content-center">
     <table class="small">
       <tr><th>Category</th><th>Headline target</th></tr>
       <tr><td>Performance</td><td>Athena p95 ≤ 10s · Redshift BI p95 ≤ 5s · ingest ≥ 50 MB/s bulk</td></tr>
       <tr><td>Freshness (Gold)</td><td>≤ 60 min end-to-end (standard) · daily SLO ≤ 06:00 UTC</td></tr>
       <tr><td>Availability</td><td>Gold read <strong class="mint">99.9%</strong> · Monitoring UI/API <strong class="mint">99.5%</strong></td></tr>
-      <tr><td>RPO / RTO (Gold)</td><td><strong class="mint">RPO 1h / RTO 4h</strong> via CRR + Iceberg snapshots (ADR-005)</td></tr>
+      <tr><td>RPO / RTO (Gold)</td><td><strong class="mint">RPO 1h / RTO 4h</strong> via CRR + Iceberg snapshots (<a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-005-dr-strategy.md" target="_blank" rel="noopener">ADR-005</a>)</td></tr>
       <tr><td>Security</td><td>0 critical vulns at deploy · 0 public buckets · PII classified ≤ 15 min post-ingest</td></tr>
       <tr><td>Quality</td><td>Gold completeness ≥ 99% · anomaly-alert actioned ≥ 80% within 24h</td></tr>
       <tr><td>Cost</td><td>≤ $0.05 per GB processed · monthly spend ≤ $18K steady-state</td></tr>
@@ -1641,7 +1641,7 @@ flowchart LR
           <li>Branch protection + CODEOWNERS enforcement</li>
         </ul>
         <h4 class="mint" style="margin-top:10px;">Data contracts CI gate</h4>
-        <p class="muted">JSON Schema diff → SemVer check → consumer signoff YAML required for MAJOR bumps. <code>docs/architecture/data-contract-ci-gate.md</code></p>
+        <p class="muted">JSON Schema diff → SemVer check → consumer signoff YAML required for MAJOR bumps. <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/data-contract-ci-gate.md" target="_blank" rel="noopener"><code>docs/architecture/data-contract-ci-gate.md</code></a></p>
       </div>
     </div>
   </div>
@@ -1655,7 +1655,7 @@ flowchart LR
       <tr><th>Area</th><th>Implementation</th></tr>
       <tr><td>Network</td><td>VPC · private subnets · VPC endpoints (no public internet for data services)</td></tr>
       <tr><td>Encryption</td><td>SSE-KMS at rest · TLS 1.2+ in transit · KMS CMK per environment</td></tr>
-      <tr><td>Access model</td><td><strong class="mint">Lake Formation authoritative for data</strong> (table/column) · IAM for service/API · LF deny wins (ADR-011)</td></tr>
+      <tr><td>Access model</td><td><strong class="mint">Lake Formation authoritative for data</strong> (table/column) · IAM for service/API · LF deny wins (<a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-011-access-control-boundary.md" target="_blank" rel="noopener">ADR-011</a>)</td></tr>
       <tr><td>RBAC roles (per domain)</td><td>DomainAdmin · DataEngineer · DataAnalyst · PipelineExecution · MonitoringReadOnly</td></tr>
       <tr><td>Data classification</td><td>Macie at Bronze ingest · 4 tiers (Public · Internal · Confidential · Restricted) · tags drive access + retention</td></tr>
       <tr><td>Audit</td><td>CloudTrail (all regions) · S3 access logging · Object Lock (WORM) audit bucket</td></tr>
@@ -1786,7 +1786,7 @@ flowchart LR
           <tr><td>Risk review</td><td>Bi-weekly · bundled with SteerCo</td></tr>
           <tr><td>Quality metrics</td><td>Weekly · in brief</td></tr>
         </table>
-        <p class="muted" style="margin-top:8px;">Full plan: <code>docs/governance/communications-plan.md</code></p>
+        <p class="muted" style="margin-top:8px;">Full plan: <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/governance/communications-plan.md" target="_blank" rel="noopener"><code>docs/governance/communications-plan.md</code></a></p>
       </div>
     </div>
   </div>
@@ -1843,7 +1843,7 @@ flowchart LR
       <tr><td>QA / UAT Team</td><td>2-3</td><td>8 in P3-4</td><td>Wk 13-14</td></tr>
       <tr><td>Training Attendees</td><td>6-10</td><td>Half-day × 3</td><td>Wk 16</td></tr>
     </table>
-    <p style="margin-top:12px;"><strong class="sea">Total client commitment:</strong> ~20-30 hrs/week across all roles. Full detail: <code>docs/risk/client-stakeholders.md</code></p>
+    <p style="margin-top:12px;"><strong class="sea">Total client commitment:</strong> ~20-30 hrs/week across all roles. Full detail: <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/risk/client-stakeholders.md" target="_blank" rel="noopener"><code>docs/risk/client-stakeholders.md</code></a></p>
   </div>
 </section>
 
@@ -1866,7 +1866,7 @@ flowchart LR
     </table>
   </div>
   <div class="slide-footer">
-    <p><strong class="sea">Peak</strong> 7 people (Wk 5-12) · <strong class="mint">Rate card:</strong> EPAM &amp; CAPG Central Europe · full reconciliation in <code>docs/delivery/wbs.md</code></p>
+    <p><strong class="sea">Peak</strong> 7 people (Wk 5-12) · <strong class="mint">Rate card:</strong> EPAM &amp; CAPG Central Europe · full reconciliation in <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/delivery/wbs.md" target="_blank" rel="noopener"><code>docs/delivery/wbs.md</code></a></p>
   </div>
 </section>
 
@@ -1885,11 +1885,11 @@ flowchart LR
       <tr><td>R6</td><td>Key team member departure</td><td>H</td><td>L</td><td>Med</td><td>Pair programming · ADRs · IaC-only · bi-weekly KT review</td></tr>
       <tr><td>R7</td><td>Scope creep</td><td>M</td><td>H</td><td>Med</td><td>SOW boundaries · 4-tier CR process · migration plan for overflow</td></tr>
       <tr><td>R9</td><td>Bedrock model access delays</td><td>M</td><td>M</td><td>Med</td><td>Submit Phase 0 · Anthropic API fallback · config-switchable</td></tr>
-      <tr><td>R5</td><td>GX / Glue Python incompatibility</td><td>M</td><td>L</td><td>Low</td><td>Run GX in Lambda 3.12 · Glue DQ fallback · ADR-006</td></tr>
+      <tr><td>R5</td><td>GX / Glue Python incompatibility</td><td>M</td><td>L</td><td>Low</td><td>Run GX in Lambda 3.12 · Glue DQ fallback · <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/adr/ADR-006-dq-engine.md" target="_blank" rel="noopener">ADR-006</a></td></tr>
     </table>
   </div>
   <div class="slide-footer">
-    <p><strong class="sea">5 High · 4 Medium · 1 Low</strong> — all mitigated · full register in <code>docs/risk/risk-register.md</code></p>
+    <p><strong class="sea">5 High · 4 Medium · 1 Low</strong> — all mitigated · full register in <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/risk/risk-register.md" target="_blank" rel="noopener"><code>docs/risk/risk-register.md</code></a></p>
   </div>
 </section>
 
@@ -1962,7 +1962,7 @@ flowchart LR
           <tr><td>Phase 3</td><td>Domain 2 source access · cross-domain business rules</td></tr>
           <tr><td>Phase 4</td><td>UAT team available · training attendees scheduled</td></tr>
         </table>
-        <p class="muted" style="margin-top:8px;">Full log: <code>docs/risk/assumptions.md</code> · 25+ assumptions with validation dates.</p>
+        <p class="muted" style="margin-top:8px;">Full log: <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/risk/assumptions.md" target="_blank" rel="noopener"><code>docs/risk/assumptions.md</code></a> · 25+ assumptions with validation dates.</p>
       </div>
     </div>
   </div>
