@@ -408,19 +408,23 @@
   }
 
   /* ── C4 PUML PNGs ──────────────────────────────────────────────────────── */
-  /* PUML renders are light-theme (white bg, dark text, bright coloured boxes). */
-  /* invert(1) + hue-rotate(180deg) flips bg→dark + text→light while keeping  */
-  /* the original semantic colours roughly intact (blue stays blue-ish, etc). */
+  /* PlantUML + C4-PlantUML renders are partially dark-friendly (dark-blue     */
+  /* containers, white text, grey helper boxes). Show them as-is on a subtle   */
+  /* light-paper backing so they read as intentional attached reference sheets */
+  /* against the dark slide, rather than inverting and scrambling semantics.  */
   .c4-img {
     max-width: 100%;
-    max-height: 560px;
+    max-height: 540px;
     width: auto; height: auto;
     object-fit: contain;
     display: block;
-    filter: invert(0.92) hue-rotate(180deg) saturate(1.05);
-    border-radius: 6px;
-    background: #0A0A12;
-    padding: 8px;
+    background: #FBFAFA;
+    padding: 14px;
+    border-radius: 4px;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.04) inset,
+      0 10px 30px rgba(0, 0, 0, 0.55),
+      0 0 0 1px rgba(0, 246, 255, 0.12);
   }
   .c4-container-row .diagram-box { padding: 4px; }
 
