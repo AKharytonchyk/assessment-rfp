@@ -421,12 +421,92 @@
     background: #FBFAFA;
     padding: 14px;
     border-radius: 4px;
+    cursor: zoom-in;
     box-shadow:
       0 1px 0 rgba(255, 255, 255, 0.04) inset,
       0 10px 30px rgba(0, 0, 0, 0.55),
       0 0 0 1px rgba(0, 246, 255, 0.12);
+    transition: box-shadow 200ms ease, transform 200ms ease;
+  }
+  .c4-img:hover {
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.04) inset,
+      0 14px 40px rgba(0, 0, 0, 0.7),
+      0 0 0 1px rgba(0, 246, 255, 0.35);
+    transform: translateY(-1px);
   }
   .c4-container-row .diagram-box { padding: 4px; }
+
+  /* ── Lightbox overlay (click-to-expand) ─────────────────────────────────── */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(6, 6, 10, 0.94);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 10000;
+    cursor: zoom-out;
+    opacity: 0;
+    transition: opacity 220ms ease;
+  }
+  .lightbox.open {
+    display: flex;
+    opacity: 1;
+  }
+  .lightbox-img {
+    max-width: 94vw;
+    max-height: 90vh;
+    background: #FBFAFA;
+    padding: 24px;
+    border-radius: 4px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(0, 246, 255, 0.2);
+    cursor: default;
+    animation: lightboxIn 260ms cubic-bezier(0.22, 0.75, 0.2, 1);
+  }
+  @keyframes lightboxIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  .lightbox-close {
+    position: absolute;
+    top: 24px;
+    right: 28px;
+    width: 44px;
+    height: 44px;
+    background: transparent;
+    border: 1px solid rgba(0, 246, 255, 0.25);
+    border-radius: 2px;
+    color: var(--sea);
+    font-family: var(--fs-display);
+    font-weight: 300;
+    font-size: 32px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 180ms ease, background 180ms ease, color 180ms ease;
+  }
+  .lightbox-close:hover {
+    border-color: var(--sea);
+    background: rgba(0, 246, 255, 0.08);
+    color: var(--mint);
+  }
+  .lightbox-hint {
+    position: absolute;
+    bottom: 26px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--muted);
+    font-family: var(--fs-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
 
   /* Full-width diagram slots (slide 7, 7b) — maximize diagram real estate */
   .diagram-full {
@@ -1607,7 +1687,7 @@
           <li>Alerts flow to Slack/Email via SNS + PagerDuty</li>
           <li>Every data journey passes one consistent quality + governance layer</li>
         </ul>
-        <p class="muted" style="margin-top:8px;">Source: <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/c4/c4-context.puml" target="_blank" rel="noopener"><code>c4-context.puml</code></a></p>
+        <p class="muted" style="margin-top:8px;">Source: <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/c4/c4-context.puml" target="_blank" rel="noopener"><code>c4-context.puml</code></a> · <a href="docs/architecture/c4/c4-context.png" target="_blank" rel="noopener"><code>PNG</code></a></p>
       </div>
     </div>
   </div>
@@ -1621,7 +1701,7 @@
     <img src="docs/architecture/c4/c4-container.png" alt="C4 Container diagram — AWS service map" class="c4-img">
   </div>
   <div class="slide-footer">
-    <p class="muted">All serverless or managed — no EC2 instances to maintain. Source: <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/c4/c4-container.puml" target="_blank" rel="noopener"><code>c4-container.puml</code></a></p>
+    <p class="muted">All serverless or managed — no EC2 instances to maintain. Source: <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/c4/c4-container.puml" target="_blank" rel="noopener"><code>c4-container.puml</code></a> · <a href="docs/architecture/c4/c4-container.png" target="_blank" rel="noopener"><code>PNG</code></a></p>
   </div>
 </section>
 
@@ -1633,7 +1713,7 @@
     <img src="docs/architecture/c4/c4-component-pipeline.png" alt="C4 Component diagram — reference pipeline" class="c4-img">
   </div>
   <div class="slide-footer">
-    <p class="muted">Source: <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/c4/c4-component-pipeline.puml" target="_blank" rel="noopener"><code>c4-component-pipeline.puml</code></a></p>
+    <p class="muted">Source: <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/c4/c4-component-pipeline.puml" target="_blank" rel="noopener"><code>c4-component-pipeline.puml</code></a> · <a href="docs/architecture/c4/c4-component-pipeline.png" target="_blank" rel="noopener"><code>PNG</code></a></p>
   </div>
 </section>
 
@@ -2503,6 +2583,13 @@ Exit: 0</pre>
 </div>
 </div>
 
+<!-- Lightbox overlay for click-to-expand C4 diagrams -->
+<div id="lightbox" class="lightbox" role="dialog" aria-label="Diagram viewer">
+  <button class="lightbox-close" aria-label="Close">×</button>
+  <img class="lightbox-img" src="" alt="">
+  <div class="lightbox-hint">click outside · or press ESC</div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
 <script>
   Reveal.initialize({
@@ -2546,6 +2633,41 @@ Exit: 0</pre>
     if (controls && slideNum && navRight && !controls.contains(slideNum)) {
       controls.insertBefore(slideNum, navRight);
     }
+
+    // Click-to-expand lightbox for C4 PUML PNGs.
+    const lightbox    = document.getElementById('lightbox');
+    const lightboxImg = lightbox && lightbox.querySelector('.lightbox-img');
+    const lightboxX   = lightbox && lightbox.querySelector('.lightbox-close');
+    const openLightbox = (src, alt) => {
+      if (!lightbox || !lightboxImg) return;
+      lightboxImg.src = src;
+      lightboxImg.alt = alt || '';
+      lightbox.classList.add('open');
+    };
+    const closeLightbox = () => {
+      if (!lightbox) return;
+      lightbox.classList.remove('open');
+      // Clear src after transition so next open animates cleanly.
+      setTimeout(() => { if (!lightbox.classList.contains('open')) lightboxImg.src = ''; }, 260);
+    };
+    document.querySelectorAll('.c4-img').forEach(img => {
+      img.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openLightbox(img.src, img.alt);
+      });
+    });
+    if (lightbox) {
+      // Click on backdrop closes; click on the image itself does NOT close.
+      lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox || e.target === lightboxX) closeLightbox();
+      });
+    }
+    if (lightboxX) lightboxX.addEventListener('click', closeLightbox);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lightbox && lightbox.classList.contains('open')) {
+        closeLightbox();
+      }
+    });
   });
 </script>
 </body>
