@@ -424,6 +424,26 @@
   }
   .c4-container-row .diagram-box { padding: 4px; }
 
+  /* Full-width diagram slots (slide 7, 7b) — maximize diagram real estate */
+  .diagram-full {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    margin: 4px 0;
+    padding: 8px;
+    background: radial-gradient(ellipse 70% 60% at center, rgba(0, 246, 255, 0.04), transparent 75%);
+    border-radius: 6px;
+  }
+  .diagram-full .c4-img {
+    max-height: 540px;
+    max-width: 100%;
+  }
+  .diagram-full.diagram-tall .c4-img {
+    max-height: 560px;
+  }
+
   /* ── Terminal / CI output blocks ───────────────────────────────────────── */
   pre.ci-output {
     font-family: var(--fs-mono);
@@ -1295,27 +1315,27 @@
     <div class="item"><span class="num">04</span>Business Outcomes &amp; KPIs</div>
     <div class="item"><span class="num">05</span>Pipeline Prioritization</div>
     <div class="item"><span class="num">06</span>Architecture Decisions (14 ADRs)</div>
-    <div class="item"><span class="num">07</span>Solution Architecture (C4)</div>
-    <div class="item"><span class="num">08</span>Domain Template</div>
-    <div class="item"><span class="num">09</span>Medallion · Iceberg · Geo</div>
-    <div class="item"><span class="num">10</span>Data Governance &amp; Mesh</div>
-    <div class="item"><span class="num">11</span>Data Quality Framework</div>
-    <div class="item"><span class="num">12</span>Monitoring &amp; Observability</div>
-    <div class="item"><span class="num">13</span>NFRs &amp; SLOs</div>
-    <div class="item"><span class="num">14</span>AI Acceleration</div>
-    <div class="item"><span class="num">15</span>CI/CD &amp; DevOps</div>
-    <div class="item"><span class="num">16</span>Data Contract CI Gate</div>
-    <div class="item"><span class="num">17</span>Security &amp; Access Control</div>
-    <div class="item"><span class="num">18</span>End-to-End User Journey</div>
-    <div class="item"><span class="num">19</span>MVP / Thin-Slice Strategy</div>
-    <div class="item"><span class="num">20</span>Delivery Approach</div>
-    <div class="item"><span class="num">21</span>Roadmap &amp; Critical Path</div>
-    <div class="item"><span class="num">22</span>Team &amp; Resource Plan</div>
-    <div class="item"><span class="num">23</span>Risk Management</div>
-    <div class="item"><span class="num">24</span>ROM Financial Proposal</div>
-    <div class="item"><span class="num">25</span>Assumptions &amp; Dependencies</div>
-    <div class="item"><span class="num">26</span>Migration Strategy</div>
-    <div class="item"><span class="num">27</span>Adoption Plan</div>
+    <div class="item"><span class="num">07</span>C4 Context + Container</div>
+    <div class="item"><span class="num">08</span>Reference Pipeline (C4 Component)</div>
+    <div class="item"><span class="num">09</span>Domain Template</div>
+    <div class="item"><span class="num">10</span>Medallion · Iceberg · Geo</div>
+    <div class="item"><span class="num">11</span>Data Governance &amp; Mesh</div>
+    <div class="item"><span class="num">12</span>Data Quality Framework</div>
+    <div class="item"><span class="num">13</span>Monitoring &amp; Observability</div>
+    <div class="item"><span class="num">14</span>NFRs &amp; SLOs</div>
+    <div class="item"><span class="num">15</span>AI Acceleration</div>
+    <div class="item"><span class="num">16</span>CI/CD &amp; DevOps</div>
+    <div class="item"><span class="num">17</span>Data Contract CI Gate</div>
+    <div class="item"><span class="num">18</span>Security &amp; Access Control</div>
+    <div class="item"><span class="num">19</span>End-to-End User Journey</div>
+    <div class="item"><span class="num">20</span>MVP / Thin-Slice Strategy</div>
+    <div class="item"><span class="num">21</span>Delivery Approach</div>
+    <div class="item"><span class="num">22</span>Roadmap &amp; Critical Path</div>
+    <div class="item"><span class="num">23</span>Team &amp; Resource Plan</div>
+    <div class="item"><span class="num">24</span>Risk Management</div>
+    <div class="item"><span class="num">25</span>ROM Financial Proposal</div>
+    <div class="item"><span class="num">26</span>Assumptions &amp; Dependencies</div>
+    <div class="item"><span class="num">27</span>Migration &amp; Adoption</div>
     <div class="item"><span class="num">28</span>Why EPAM</div>
     <div class="item"><span class="num">29</span>References · Q&amp;A</div>
     <div class="item"><span class="num">30</span>Appendix B · Microsoft refs</div>
@@ -1592,28 +1612,24 @@
 <!-- ═══ SLIDE 7: C4 Container (AWS) ═══ -->
 <section>
   <h2>Solution Architecture — AWS Container View</h2>
-  <div class="diagram-row c4-container-row">
-    <div class="diagram-box">
-      <img src="docs/architecture/c4/c4-container.png" alt="C4 Container diagram — AWS service map" class="c4-img">
-    </div>
-    <div class="card">
-      <h3>Layer summary</h3>
-      <div class="card-content">
-        <table>
-          <tr><td class="mint">Ingest</td><td>Glue · Lambda · Step Functions · DMS</td></tr>
-          <tr><td class="mint">Storage</td><td>S3 Medallion · <strong>Iceberg</strong></td></tr>
-          <tr><td class="mint">Catalog</td><td>Glue Catalog · DataZone</td></tr>
-          <tr><td class="mint">Query</td><td>Athena · Redshift Serverless</td></tr>
-          <tr><td class="mint">DQ</td><td>Great Expectations (Lambda)</td></tr>
-          <tr><td class="mint">Obs</td><td>CloudWatch · X-Ray · OpenLineage</td></tr>
-          <tr><td class="mint">Security</td><td>Lake Formation · KMS · Macie</td></tr>
-          <tr><td class="mint">CI/CD + AI</td><td>GH Actions · CodeBuild · Bedrock</td></tr>
-        </table>
-      </div>
-    </div>
+  <p class="slide-sub">9 boundaries · 36 containers · Iceberg storage · DataZone catalog · OpenLineage + Marquez lineage · Lake Formation authoritative · AI agents via Bedrock</p>
+  <div class="diagram-full">
+    <img src="docs/architecture/c4/c4-container.png" alt="C4 Container diagram — AWS service map" class="c4-img">
   </div>
   <div class="slide-footer">
     <p class="muted">All serverless or managed — no EC2 instances to maintain. Source: <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/c4/c4-container.puml" target="_blank" rel="noopener"><code>c4-container.puml</code></a></p>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 7b: C4 Component — Reference Pipeline ═══ -->
+<section>
+  <h2>Reference Pipeline — Component View</h2>
+  <p class="slide-sub">Every pipeline inherits this shape · Iceberg <code>MERGE INTO</code> on Silver/Gold · contract-validated · PII-scrubbed quarantine · OpenLineage emitted at every stage · replay from snapshot</p>
+  <div class="diagram-full diagram-tall">
+    <img src="docs/architecture/c4/c4-component-pipeline.png" alt="C4 Component diagram — reference pipeline" class="c4-img">
+  </div>
+  <div class="slide-footer">
+    <p class="muted">Source: <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/c4/c4-component-pipeline.puml" target="_blank" rel="noopener"><code>c4-component-pipeline.puml</code></a></p>
   </div>
 </section>
 

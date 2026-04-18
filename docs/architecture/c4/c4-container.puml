@@ -4,6 +4,13 @@
 LAYOUT_WITH_LEGEND()
 LAYOUT_TOP_DOWN()
 
+' Tighter spacing for slide-friendly aspect ratio
+skinparam nodesep 14
+skinparam ranksep 22
+skinparam defaultFontSize 13
+skinparam linetype ortho
+skinparam roundCorner 8
+
 title Enterprise Data Platform - Container Diagram (AWS Services)
 
 Person(analyst, "Data Analyst", "Queries published data")

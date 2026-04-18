@@ -4,6 +4,13 @@
 LAYOUT_WITH_LEGEND()
 LAYOUT_TOP_DOWN()
 
+' Tighter spacing for slide-friendly rendering
+skinparam nodesep 12
+skinparam ranksep 20
+skinparam defaultFontSize 12
+skinparam linetype ortho
+skinparam roundCorner 6
+
 title Enterprise Data Platform - Component Diagram: Reference Pipeline
 
 System_Ext(source, "Source System", "CRM / ERP / HRIS / Files / DMS change log")
