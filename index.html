@@ -527,6 +527,12 @@
   .diagram-full.diagram-tall .c4-img {
     max-height: 560px;
   }
+  /* Landscape variant — let width drive sizing so the image fills slide width */
+  .diagram-full.diagram-wide .c4-img {
+    max-height: 460px;
+    max-width: 100%;
+    width: 100%;
+  }
 
   /* ── Terminal / CI output blocks ───────────────────────────────────────── */
   pre.ci-output {
@@ -1708,12 +1714,12 @@
 <!-- ═══ SLIDE 7b: C4 Component — Reference Pipeline ═══ -->
 <section>
   <h2>Reference Pipeline — Component View</h2>
-  <p class="slide-sub">Every pipeline inherits this shape · Iceberg <code>MERGE INTO</code> on Silver/Gold · contract-validated · PII-scrubbed quarantine · OpenLineage emitted at every stage · replay from snapshot</p>
-  <div class="diagram-full diagram-tall">
-    <img src="docs/architecture/c4/c4-component-pipeline.png" alt="C4 Component diagram — reference pipeline" class="c4-img">
+  <p class="slide-sub">Linear 8-stage flow · Iceberg <code>MERGE INTO</code> on Silver/Gold · 3 DQ gates · PII-scrubbed quarantine · cross-cutting OpenLineage + CloudWatch metrics on every stage</p>
+  <div class="diagram-full diagram-wide">
+    <img src="docs/architecture/c4/c4-component-pipeline.png" alt="C4 Component diagram — reference pipeline, 8-stage left-to-right flow with quarantine branch" class="c4-img">
   </div>
   <div class="slide-footer">
-    <p class="muted">Source: <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/c4/c4-component-pipeline.puml" target="_blank" rel="noopener"><code>c4-component-pipeline.puml</code></a> · <a href="docs/architecture/c4/c4-component-pipeline.png" target="_blank" rel="noopener"><code>PNG</code></a></p>
+    <p class="muted">Source: <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/architecture/c4/c4-component-pipeline.puml" target="_blank" rel="noopener"><code>c4-component-pipeline.puml</code></a> · <a href="docs/architecture/c4/c4-component-pipeline.png" target="_blank" rel="noopener"><code>PNG</code></a> · click diagram to expand</p>
   </div>
 </section>
 
