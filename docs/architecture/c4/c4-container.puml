@@ -8,61 +8,145 @@ title Enterprise Data Platform - Container Diagram (AWS Services)
 
 Person(analyst, "Data Analyst", "Queries published data")
 Person(engineer, "Data Engineer", "Builds pipelines")
+Person(admin, "Platform Admin", "Monitors + operates")
 
-System_Ext(sources, "Source Systems", "CRM, ERP, HRIS, CSV/Excel")
-System_Ext(bi_tools, "BI Tools", "QuickSight, Tableau")
+System_Ext(sources_rdbms, "RDBMS Sources", "CRM, ERP (JDBC)")
+System_Ext(sources_api, "API Sources", "HRIS, SaaS CRM")
+System_Ext(sources_files, "File Sources", "CSV, Excel, SFTP")
+System_Ext(bi_tools, "BI Tools", "QuickSight, Tableau, Power BI")
+System_Ext(ml_tools, "ML / SageMaker", "Curated datasets")
 System_Ext(github, "GitHub", "Code, PRs, Actions")
 
 System_Boundary(aws, "AWS Cloud - Enterprise Data Platform") {
 
-    Container(sfn, "Step Functions", "ASL", "Orchestrates pipeline stages")
-    Container(glue, "AWS Glue Jobs", "Python/PySpark", "Ingestion & transformation")
-    Container(lambda, "Lambda Functions", "Python", "Connectors, DQ checks, API handlers")
+    ' ── Ingestion ──────────────────────────────────────────
+    Container_Boundary(ingest, "Ingestion Layer") {
+        Container(dms, "AWS DMS", "CDC", "Change data capture for RDBMS sources (ADR-003)")
+        Container(glue_ingest, "Glue Jobs (Ingest)", "PySpark / Python", "File + API extraction, writes Bronze")
+        Container(lambda_api, "Lambda Connectors", "Python 3.12", "API cursors, incremental pagination")
+        Container(sfn, "Step Functions", "ASL", "Pipeline orchestration")
+    }
 
-    ContainerDb(s3_raw, "S3 Bronze", "Raw", "Source-native data copy")
-    ContainerDb(s3_curated, "S3 Silver", "Curated", "Cleansed, normalized")
-    ContainerDb(s3_gold, "S3 Gold", "Published", "Business-ready aggregates")
-    ContainerDb(catalog, "Glue Catalog", "Metadata", "Schema registry, classifications")
+    ' ── Storage (Medallion) ────────────────────────────────
+    Container_Boundary(storage, "Storage · Medallion") {
+        ContainerDb(s3_bronze, "S3 Bronze", "Raw + sidecar", "Source-native, append-only, immutable")
+        ContainerDb(s3_silver, "S3 Silver", "Iceberg + GeoParquet", "Cleansed, typed, H3-indexed (ADR-002, ADR-010)")
+        ContainerDb(s3_gold, "S3 Gold", "Iceberg + GeoParquet", "Business-ready, time-travel enabled (ADR-002)")
+        ContainerDb(rejected, "S3 Rejected", "PII-scrubbed", "Quarantine + DQ report")
+    }
 
-    Container(athena, "Athena", "SQL", "Serverless queries")
-    Container(redshift, "Redshift Serverless", "SQL", "Analytical queries")
+    ' ── Catalog & Discovery ────────────────────────────────
+    Container_Boundary(catalog_layer, "Catalog + Marketplace") {
+        ContainerDb(glue_catalog, "Glue Data Catalog", "Hive metastore", "Schema registry, classification tags")
+        Container(datazone, "AWS DataZone", "Catalog / marketplace", "Data product discovery, subscriptions (ADR-009)")
+        ContainerDb(contract_registry, "Contract Registry", "DynamoDB", "JSON Schema contracts + SemVer (ADR-004)")
+    }
 
-    Container(gx, "Great Expectations", "Python", "Data quality checks")
+    ' ── Query / Analytics ──────────────────────────────────
+    Container_Boundary(query, "Query + Analytics") {
+        Container(athena, "Amazon Athena", "Serverless SQL", "Ad-hoc queries, GeoSpatial UDFs")
+        Container(redshift, "Redshift Serverless", "Analytical SQL", "BI-grade spatial joins")
+    }
 
-    Container(react_app, "Monitoring Dashboard", "React/TS", "Pipeline status, DQ scores, lineage")
-    Container(api, "Monitoring API", "FastAPI", "REST API + Cognito auth")
-    Container(cloudwatch, "CloudWatch", "Observability", "Metrics, logs, alarms, X-Ray")
-    Container(sns, "SNS + EventBridge", "Events", "Alerts, pipeline events")
+    ' ── Data Quality ───────────────────────────────────────
+    Container_Boundary(dq, "Data Quality") {
+        Container(gx, "Great Expectations", "Lambda Py 3.12", "DQ gates: completeness, accuracy, timeliness (ADR-006)")
+        Container(glue_dq, "Glue DQ (fallback)", "DQDL", "In-job checks when GX incompatible")
+        Container(soda, "Soda Core", "Nightly Lambda", "Anomaly detection on Gold (ADR-013)")
+        ContainerDb(dq_store, "DQ Results Store", "DynamoDB + S3", "Historical scores + trends")
+    }
 
-    Container(lake_formation, "Lake Formation + IAM", "Security", "RBAC, column-level access, KMS")
-    Container(gh_actions, "GitHub Actions", "CI/CD", "Build, test, deploy pipelines")
-    Container(agents, "AI Agents", "CodeBuild + Bedrock", "Automated PR review, pipeline generation")
+    ' ── MDM / Entity Resolution ────────────────────────────
+    Container_Boundary(mdm, "MDM / Entity Resolution") {
+        Container(entity_res, "AWS Entity Resolution", "Managed ML", "Deterministic + probabilistic match (ADR-012)")
+        Container(zingg, "Zingg (fallback)", "OSS ML", "Complex probabilistic / spatial ER")
+        ContainerDb(mdm_dims, "Shared Gold Dims", "Iceberg", "dim_customer, dim_asset, dim_spatial_entity")
+    }
+
+    ' ── Monitoring & Observability ─────────────────────────
+    Container_Boundary(obs, "Monitoring + Observability") {
+        Container(react_app, "React Monitoring", "React + TypeScript", "Cross-domain hub, DQ scorecard, lineage DAG")
+        Container(api, "Monitoring API", "FastAPI + Cognito", "REST endpoints for dashboard")
+        Container(cloudwatch, "CloudWatch", "Metrics + Logs + Alarms", "Custom metrics, anomaly detection")
+        Container(xray, "AWS X-Ray", "Distributed tracing", "E2E pipeline traces")
+        Container(marquez, "Marquez + OpenLineage", "ECS Fargate + RDS PG", "Column-level lineage (ADR-008)")
+        Container(grafana, "Grafana", "Ops dashboards", "Glue DPU, Lambda, S3, cost")
+        Container(sns, "SNS + EventBridge", "Pub/sub", "Alert fan-out, pipeline events")
+    }
+
+    ' ── Security & Governance ──────────────────────────────
+    Container_Boundary(security, "Security + Governance") {
+        Container(lake_formation, "Lake Formation", "Fine-grained RBAC", "Table/column grants, LF deny wins (ADR-011)")
+        Container(iam, "IAM + SSO", "Identity", "5 roles per domain, GitHub OIDC federation")
+        Container(kms, "KMS CMKs", "Encryption", "Per-environment keys")
+        Container(cloudtrail, "CloudTrail", "Audit log", "All regions, Object Lock WORM")
+        Container(macie, "Amazon Macie", "PII classifier", "Bronze arrival scan, 4-tier labels (SEC-005a)")
+    }
+
+    ' ── CI/CD + AI ─────────────────────────────────────────
+    Container_Boundary(cicd_ai, "CI/CD + AI Agents") {
+        Container(gh_actions, "GitHub Actions", "YAML workflows", "Terraform, Python, React, contract gate")
+        Container(codebuild, "AWS CodeBuild", "Agent runtime", "Isolated execution for Claude-powered agents")
+        Container(bedrock, "Amazon Bedrock", "Claude inference", "Sonnet + Haiku via Application Inference Profile")
+        ContainerDb(agent_store, "Agent State", "DynamoDB", "Event-sourced saga, audit trail")
+    }
 }
 
-Rel_D(sources, glue, "Raw data")
-Rel_D(sfn, glue, "Orchestrates")
-Rel_D(sfn, gx, "Runs DQ gates")
+' ── Data flow relationships ────────────────────────────────
+Rel(sources_rdbms, dms, "Replicates via CDC")
+Rel(sources_api, lambda_api, "Pulls incremental")
+Rel(sources_files, glue_ingest, "Ingests files")
+Rel(dms, s3_bronze, "Writes change log")
+Rel(glue_ingest, s3_bronze, "Writes raw")
+Rel(lambda_api, s3_bronze, "Writes raw")
 
-Rel_D(glue, s3_raw, "Writes")
-Rel_D(glue, s3_curated, "Transforms")
-Rel_D(glue, s3_gold, "Publishes")
-Rel_R(catalog, s3_raw, "Catalogs")
-Rel_R(catalog, s3_curated, "Catalogs")
-Rel_R(catalog, s3_gold, "Catalogs")
+Rel(sfn, glue_ingest, "Orchestrates")
+Rel(sfn, gx, "DQ gate between stages")
+Rel(s3_bronze, macie, "PII classification scan")
+Rel(glue_ingest, s3_silver, "Transforms + H3 index")
+Rel(glue_ingest, s3_gold, "MDM joins + publishes")
+Rel(entity_res, mdm_dims, "Writes resolved dims")
+Rel(mdm_dims, s3_gold, "Feeds Gold")
 
-Rel_D(athena, catalog, "Queries")
-Rel_D(redshift, s3_gold, "Loads")
-Rel_D(bi_tools, redshift, "Connects")
+Rel(glue_catalog, s3_bronze, "Catalogs")
+Rel(glue_catalog, s3_silver, "Catalogs")
+Rel(glue_catalog, s3_gold, "Catalogs")
+Rel(datazone, glue_catalog, "Syncs metadata")
+Rel(contract_registry, glue_catalog, "Annotates")
 
-Rel_D(react_app, api, "Fetches data")
-Rel_D(sfn, sns, "Emits events")
-Rel_D(cloudwatch, sns, "Triggers alerts")
+' ── Consumption ───────────────────────────────────────────
+Rel(athena, glue_catalog, "Queries via catalog")
+Rel(redshift, s3_gold, "Loads / Spectrum")
+Rel(analyst, athena, "SQL")
+Rel(analyst, react_app, "Views dashboards")
+Rel(analyst, datazone, "Discovers data products")
+Rel(bi_tools, redshift, "BI reports")
+Rel(ml_tools, s3_gold, "Curated datasets")
 
-Rel_D(analyst, athena, "SQL queries")
-Rel_D(analyst, react_app, "Views dashboards")
-Rel_D(engineer, github, "Pushes code")
-Rel_D(github, gh_actions, "Triggers")
-Rel_D(gh_actions, agents, "Invokes")
-Rel_D(lake_formation, catalog, "Governs")
+' ── Observability ──────────────────────────────────────────
+Rel(gx, dq_store, "Stores results")
+Rel(soda, dq_store, "Anomaly findings")
+Rel(glue_ingest, marquez, "Emits OpenLineage events")
+Rel(sfn, marquez, "Emits pipeline lineage")
+Rel(react_app, api, "Reads")
+Rel(api, dq_store, "Reads DQ")
+Rel(api, marquez, "Reads lineage DAG")
+Rel(cloudwatch, sns, "Triggers alerts")
+Rel(admin, grafana, "Ops view")
+Rel(admin, react_app, "Platform view")
+
+' ── Security ──────────────────────────────────────────────
+Rel(lake_formation, glue_catalog, "Governs access")
+Rel(iam, kms, "Grants key usage")
+Rel(cloudtrail, s3_bronze, "Audit log delivery")
+Rel(macie, glue_catalog, "Writes classification tags")
+
+' ── CI/CD + AI ────────────────────────────────────────────
+Rel(engineer, github, "Pushes PRs")
+Rel(github, gh_actions, "Triggers workflows")
+Rel(gh_actions, codebuild, "Invokes AI agents")
+Rel(codebuild, bedrock, "LLM inference")
+Rel(codebuild, agent_store, "Saga state")
+Rel(gh_actions, contract_registry, "Enforces contract CI gate")
 
 @enduml

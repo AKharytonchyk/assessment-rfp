@@ -4,61 +4,110 @@
 LAYOUT_WITH_LEGEND()
 LAYOUT_TOP_DOWN()
 
-title Enterprise Data Platform - Component Diagram: Pipeline Orchestration
+title Enterprise Data Platform - Component Diagram: Reference Pipeline
 
-System_Ext(source, "Source System", "CRM / ERP / HRIS / Files")
+System_Ext(source, "Source System", "CRM / ERP / HRIS / Files / DMS change log")
 
 Container_Boundary(sfn_container, "Step Functions Pipeline Orchestrator") {
 
-    Component(config, "Config Reader", "Lambda", "Reads pipeline params from SSM: schedule, source, DQ thresholds")
+    Component(config, "Config Reader", "Lambda", "Reads pipeline params from SSM: schedule, source, DQ thresholds, contract version")
 
-    Component(ingest, "Ingest Step", "Glue Job", "Extracts from source via edp_common connectors, writes Bronze as Parquet")
-    Component(dq1, "Bronze DQ Gate", "Lambda + GX", "Schema check, record count, ingestion timestamp")
+    Component(contract_check, "Contract Validator", "Lambda", "JSON Schema validation against versioned contract (ADR-004)")
 
-    Component(transform, "Transform Step", "Glue PySpark", "Type casting, dedup, PII masking, schema enforcement -> Silver")
-    Component(dq2, "Silver DQ Gate", "Lambda + GX", "Completeness >= 95%, accuracy, schema conformance")
+    Component(ingest, "Ingest Step", "Glue Job / Lambda", "Extract via edp_common.ingest connectors (API, JDBC, File, DMS); writes Bronze append-only")
 
-    Component(publish, "Publish Step", "Glue PySpark", "Aggregation, joins, business logic, SCD Type 2 -> Gold")
-    Component(dq3, "Gold DQ Gate", "Lambda + GX", "Completeness >= 99%, timeliness SLA, business rules")
+    Component(macie_scan, "PII Scan", "Macie + custom classifiers", "Classification labels applied at Bronze arrival (SEC-005a, ADR-014)")
 
-    Component(notify, "Notify Step", "Lambda", "Emits completion event, writes execution record, alerts on failure")
-    Component(error, "Error Handler", "SFn Catch/Retry", "3x retry with backoff, then quarantine + alert + FAILED")
+    Component(dq1, "Bronze DQ Gate", "Lambda + GX", "Schema existence, record count, ingestion timestamp")
+
+    Component(transform, "Silver Transform", "Glue PySpark", "Type casting, dedup, schema enforcement, PII masking/tokenization, CRS re-projection (ADR-010)")
+
+    Component(h3_index, "H3 Spatial Index", "edp_common.spatial", "Computes H3 res 7/9/12 for all geometries; partition candidate (ADR-010)")
+
+    Component(silver_write, "Silver Writer", "Iceberg MERGE INTO", "ACID upsert, schema evolution, snapshot isolation (ADR-002)")
+
+    Component(dq2, "Silver DQ Gate", "Lambda + GX", "Completeness >= 95%, accuracy, schema + spatial: CRS, topology, bbox")
+
+    Component(quarantine, "Quarantine Handler", "Lambda", "PII scrub (tokenize/hash) before writing to rejected/, emit triage event (ADR-014)")
+
+    Component(gold_build, "Gold Builder", "Glue PySpark", "Aggregation, SCD Type 2 dims, cross-domain joins, business rules")
+
+    Component(entity_resolve, "Entity Resolver", "AWS Entity Resolution + Zingg", "Deterministic + probabilistic match; writes dim_customer, dim_asset, dim_spatial_entity (ADR-012)")
+
+    Component(gold_write, "Gold Writer", "Iceberg MERGE INTO", "WAP pattern: write → audit → publish; time-travel enabled")
+
+    Component(dq3, "Gold DQ Gate", "Lambda + GX + Soda", "Completeness >= 99%, timeliness SLO, business rules, anomaly detection (ADR-013)")
+
+    Component(lineage, "Lineage Emitter", "OpenLineage-Spark agent + edp_common.lineage", "Column-level lineage events → Marquez (ADR-008)")
+
+    Component(metrics, "Metrics Emitter", "edp_common.metrics", "CloudWatch custom metrics: records_processed, freshness_lag, dq_scores")
+
+    Component(notify, "Notify Step", "Lambda", "Completion event, writes execution record, alerts on failure/SLO breach")
+
+    Component(error, "Error Handler", "SFn Catch/Retry", "3x retry w/ backoff, then quarantine + PagerDuty alert")
+
+    Component(replay, "Replay Controller", "SFn + Iceberg snapshots", "Re-runs from snapshot on fix; idempotent MERGE INTO")
 }
 
 Container_Ext(ssm, "SSM Parameter Store", "Pipeline configuration")
-Container_Ext(s3_bronze, "S3 Bronze (Raw)", "Source-native data")
-Container_Ext(s3_silver, "S3 Silver (Curated)", "Cleansed data")
-Container_Ext(s3_gold, "S3 Gold (Published)", "Business-ready data")
-Container_Ext(s3_rejected, "S3 Rejected", "Quarantined bad records")
-Container_Ext(catalog, "Glue Catalog", "Schema metadata")
-Container_Ext(dynamo, "DynamoDB", "Execution records")
-Container_Ext(events, "EventBridge + SNS", "Events and alerts")
-Container_Ext(cw, "CloudWatch + X-Ray", "Metrics and traces")
+ContainerDb_Ext(contract_reg, "Contract Registry", "DynamoDB: versioned JSON Schemas")
+ContainerDb_Ext(s3_bronze, "S3 Bronze", "Source-native, append-only")
+ContainerDb_Ext(s3_silver, "S3 Silver (Iceberg)", "Cleansed, H3-indexed")
+ContainerDb_Ext(s3_gold, "S3 Gold (Iceberg)", "Business-ready")
+ContainerDb_Ext(s3_rejected, "S3 Rejected", "PII-scrubbed quarantine")
+ContainerDb_Ext(catalog, "Glue Catalog + DataZone", "Schema + classification tags")
+ContainerDb_Ext(dynamo, "DynamoDB", "Execution records, DQ results")
+ContainerDb_Ext(marquez_ext, "Marquez", "Lineage graph store")
+Container_Ext(events, "EventBridge + SNS", "Pipeline events + alerts")
+Container_Ext(cw, "CloudWatch + X-Ray", "Metrics, logs, traces")
 
+' ── Flow ──────────────────────────────────────────────
 Rel_D(config, ssm, "Reads config")
+Rel_D(config, contract_check, "Provides contract ref")
+Rel_D(contract_check, contract_reg, "Resolves schema")
 Rel_D(source, ingest, "Provides data")
 Rel_D(ingest, s3_bronze, "Writes raw")
-Rel_R(ingest, catalog, "Updates tables")
+Rel_D(s3_bronze, macie_scan, "Triggers scan on arrival")
+Rel_D(macie_scan, catalog, "Writes classification tags")
 Rel_D(ingest, dq1, "Next")
 
 Rel_D(dq1, transform, "Pass")
-Rel_D(dq1, cw, "Emits metrics")
+Rel_D(dq1, quarantine, "Fail")
 
-Rel_D(transform, s3_silver, "Writes curated")
-Rel_D(transform, dq2, "Next")
+Rel_D(transform, h3_index, "Spatial enrich")
+Rel_D(h3_index, silver_write, "Writes Iceberg")
+Rel_D(silver_write, s3_silver, "MERGE INTO")
+Rel_D(silver_write, dq2, "Next")
 
-Rel_D(dq2, publish, "Pass")
-Rel_D(dq2, s3_rejected, "Fail: quarantine")
+Rel_D(dq2, gold_build, "Pass")
+Rel_D(dq2, quarantine, "Fail: PII-scrubbed route")
+Rel_D(quarantine, s3_rejected, "Writes sanitized")
 
-Rel_D(publish, s3_gold, "Writes published")
-Rel_D(publish, dq3, "Next")
+Rel_D(gold_build, entity_resolve, "Entity reconciliation")
+Rel_D(entity_resolve, gold_write, "Writes resolved dims")
+Rel_D(gold_write, s3_gold, "MERGE INTO + snapshot")
+Rel_D(gold_write, dq3, "Next (WAP audit)")
 
-Rel_D(dq3, notify, "Pass")
+Rel_D(dq3, notify, "Pass: publish + notify")
+Rel_D(dq3, events, "Fail: block publish, alert")
 
-Rel_D(notify, events, "Pipeline events + alerts")
+Rel_D(notify, events, "Pipeline events")
 Rel_D(notify, dynamo, "Writes execution record")
 
-Rel_D(error, events, "Failure alert")
-Rel_D(error, s3_rejected, "Quarantine")
+' ── Error + replay ─────────────────────────────────────
+Rel_R(error, events, "Failure alert")
+Rel_R(error, s3_rejected, "Quarantine")
+Rel_R(error, replay, "Trigger on-fix")
+Rel_D(replay, silver_write, "Re-run from snapshot")
+
+' ── Observability cross-cuts ───────────────────────────
+Rel_R(ingest, lineage, "Emits")
+Rel_R(transform, lineage, "Emits")
+Rel_R(gold_build, lineage, "Emits")
+Rel_R(lineage, marquez_ext, "OpenLineage events")
+Rel_R(ingest, metrics, "Emits")
+Rel_R(transform, metrics, "Emits")
+Rel_R(dq3, metrics, "Emits")
+Rel_R(metrics, cw, "CloudWatch")
 
 @enduml
