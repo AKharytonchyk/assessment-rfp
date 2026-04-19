@@ -29,3 +29,8 @@ NOTES.md
 DEFENSE.md
 DEFENSE_*.md
 _private*.md
+
+# Other local-only files
+*.local.*
+*_local.*
+Self Presentation*
