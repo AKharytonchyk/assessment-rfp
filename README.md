@@ -2,11 +2,28 @@
 
 Enterprise Data Platform — RFP response package. Domain-centric lakehouse on AWS, AI-accelerated delivery, 16-week engagement.
 
-**Primary artifact:** 📺 [**Presentation (live)**](./index.html) — reveal.js + EPAM dark palette
+## 📺 Primary artifact
 
-Locally: `open index.html`. Hosted: [GitHub Pages URL once deployed].
+**Live presentation** — [**akharytonchyk.github.io/assessment-rfp**](https://akharytonchyk.github.io/assessment-rfp/)
 
-Navigation — arrow keys; `Esc`/`O` overview; `F` fullscreen; `.` pause screen.
+reveal.js · EPAM dark palette · 40 slides + Appendix B
+
+Navigation: arrow keys · `Esc`/`O` overview · `F` fullscreen · `.` pause. Click any C4 diagram to expand.
+
+## 📎 Offline fallback (auto-generated)
+
+PDF and PPTX exports are produced locally via `scripts/` — they live in `exports/` (gitignored, regenerate per content change):
+
+```bash
+cd scripts && npm install && npm run install-browser
+npm run export   # → exports/EDP-RFP-Response.pdf + .pptx
+```
+
+See [`scripts/README.md`](./scripts/README.md) for details.
+
+## 🏷️ Submission snapshot
+
+Tag [`v1.0-assessment`](https://github.com/AKharytonchyk/assessment-rfp/tree/v1.0-assessment) points to the immutable commit committee reviewers see.
 
 ---
 
@@ -14,10 +31,13 @@ Navigation — arrow keys; `Esc`/`O` overview; `F` fullscreen; `.` pause screen.
 
 | Area | Content |
 |---|---|
-| [`index.html`](./index.html) | Reveal.js presentation — 26 slides + Appendix B |
-| [`docs/slides/slide-content.md`](./docs/slides/slide-content.md) | Slide-by-slide narrative with speaker notes (source of truth for deck) |
-| [`docs/architecture/`](./docs/architecture/) | Architecture — diagrams, NFR/SLO matrix, C4 L3, data-contract CI gate, domain health score |
+| [`index.html`](./index.html) | Reveal.js presentation source — 40 slides + Appendix B |
+| [`exports/`](./scripts/README.md) | PDF + PPTX (gitignored, regenerate via `scripts/`) |
+| [`scripts/`](./scripts/) | Playwright + pptxgenjs export tooling |
+| [`docs/slides/slide-content.md`](./docs/slides/slide-content.md) | Slide-by-slide narrative with speaker notes (source of truth) |
+| [`docs/architecture/`](./docs/architecture/) | NFR/SLO matrix · C4 L3 · data-contract CI gate · domain health score · Mermaid diagrams |
 | [`docs/architecture/adr/`](./docs/architecture/adr/) | **14 ADRs** in MADR format — cloud, Iceberg, CDC, schema contracts, DR, DQ, orchestration, lineage, catalog, geospatial, access control, MDM, data observability, retention |
+| [`docs/architecture/c4/`](./docs/architecture/c4/) | C4 diagrams — PUML source + rendered PNG (context, container, component) |
 | [`docs/delivery/`](./docs/delivery/) | WBS · ROM · resource plan · delivery approach · RACI · pipeline prioritization · adoption plan |
 | [`docs/risk/`](./docs/risk/) | Risk register · assumptions log · client stakeholders |
 | [`docs/governance/`](./docs/governance/) | Project charter · CR template · comms plan · QMP · stakeholder register · benefits realization · lessons learned |
@@ -29,7 +49,7 @@ Navigation — arrow keys; `Esc`/`O` overview; `F` fullscreen; `.` pause screen.
 ### 🏛️ Solution Architect
 - [14 ADRs index](./docs/architecture/adr/README.md)
 - [NFR / SLO matrix](./docs/architecture/nfr-slo-matrix.md)
-- [C4 L3 reference pipeline](./docs/architecture/c4-component-reference-pipeline.mmd)
+- [C4 diagrams (PUML + PNG)](./docs/architecture/c4/) · [C4 L3 reference pipeline](./docs/architecture/c4/c4-component-pipeline.puml)
 - [Architecture diagrams (Mermaid)](./docs/architecture/)
 
 ### 🎯 Product Manager
@@ -68,64 +88,63 @@ Navigation — arrow keys; `Esc`/`O` overview; `F` fullscreen; `.` pause screen.
 - **Client:** [Firm] — geo-data specialist
 - **Stack:** AWS cloud-native (Azure Fabric variant available with delta ROM)
 - **Deliverables:** 10 pipelines across 2 domains · reusable templates · CI/CD · DQ framework · monitoring hub · training · migration plan
-- **Duration:** 16 weeks
-- **Team:** Central Europe, 4 → 7 → 6 FTE ramp
+- **Duration:** 16 weeks · **Team:** Central Europe, 4 → 7 → 6 FTE ramp
 - **ROM:** $403K – $449K (T&M)
-
----
-
-## How to deploy as GitHub Pages
-
-1. **Create a public GitHub repo** (e.g. `assessment-rfp`).
-2. **Commit and push** this folder:
-   ```bash
-   cd /Users/Artsiom_Kharytonchyk/Git/GitHub/assessment-rfp
-   git init
-   git add .
-   git commit -m "Initial EDP RFP response package"
-   git branch -M main
-   git remote add origin https://github.com/<your-username>/assessment-rfp.git
-   git push -u origin main
-   ```
-3. **Enable Pages:** Repo → Settings → Pages → Source: `Deploy from a branch` → Branch: `main` / `(root)` → Save.
-4. **Tag the submission** (immutable snapshot for committee review):
-   ```bash
-   git tag -a v1.0-assessment -m "Assessment submission snapshot"
-   git push origin v1.0-assessment
-   ```
-5. **Share** the Pages URL + repo URL in the submission email.
-
-### Pre-submission checklist
-
-- [ ] Public repo, no secrets, no internal identifiers (verified — only `EDP-2026-01`)
-- [ ] `index.html` renders — open locally first, check all 26 slides advance
-- [ ] All links in slide deck and README resolve
-- [ ] Tagged `v1.0-assessment` so committee reviews a pinned commit
-- [ ] Pages build green in repo Settings → Pages
-- [ ] Submission email includes:
-  - Pages URL (primary)
-  - Repo URL (evidence)
-  - Tag/commit SHA
-  - 2-sentence TL;DR
-  - Optional: PDF print of `index.html` as offline fallback
 
 ---
 
 ## Local preview
 
-```bash
-# Simple
-open index.html
+Open [`index.html`](./index.html) directly in a browser, or run a static server (better for Reveal.js hash navigation):
 
-# Or a local server (better for reveal.js hash navigation)
+```bash
 python3 -m http.server 8000
 # then open http://localhost:8000
 ```
 
 ---
 
+## Reproduce the deployment
+
+If you need to redeploy (fork, new repo, etc.):
+
+```bash
+# Push to a public GH repo
+git remote add origin https://github.com/<user>/<repo>.git
+git push -u origin main
+
+# Enable Pages
+gh api --method POST /repos/<user>/<repo>/pages \
+  -f "source[branch]=main" -f "source[path]=/"
+
+# Tag submission snapshot
+git tag -a v1.0-assessment -m "Assessment submission"
+git push origin v1.0-assessment
+```
+
+---
+
+## Pre-submission checklist
+
+- [x] Public repo, no secrets, no internal identifiers (project code `EDP-2026-01`)
+- [x] `index.html` renders — all 40 slides navigable via arrow keys + #/n hash
+- [x] All deep-links in the deck resolve (14 ADRs · supporting docs · C4 PNGs)
+- [x] Tag `v1.0-assessment` at current HEAD
+- [x] GitHub Pages build green → https://akharytonchyk.github.io/assessment-rfp/
+- [x] PDF + PPTX exports produced via `scripts/`
+- [ ] Submission email sent to committee with:
+  - Pages URL (primary)
+  - Repo URL (evidence)
+  - Tag `v1.0-assessment`
+  - PDF attachment (offline fallback)
+  - Optional: PPTX attachment
+
+---
+
 ## Attribution
 
-- Reveal.js 5.x — MIT
-- Mermaid 11.x — MIT
+- **reveal.js** 5.x — MIT
+- **C4-PlantUML** on PlantUML — GPL
+- **Graphviz** — EPL
+- **Playwright + pptxgenjs** (export tooling) — Apache-2.0 / MIT
 - EPAM dark palette — template from `../reveal-epam-template/`
