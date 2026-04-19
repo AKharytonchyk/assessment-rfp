@@ -645,6 +645,63 @@
     font-style: normal !important;
   }
 
+  /* ── Org chart (slide 18) ──────────────────────────────────────────────── */
+  .orgchart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .org-tier {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .org-tier.tier-3 {
+    gap: 4px;
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+  .org-node {
+    font-family: var(--fs-body);
+    font-size: 10px;
+    padding: 6px 10px;
+    background: linear-gradient(180deg, var(--card) 0%, var(--ink) 100%);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    text-align: center;
+    min-width: 78px;
+    line-height: 1.3;
+  }
+  .org-node strong {
+    font-weight: 600;
+    color: var(--snow);
+  }
+  .org-node span {
+    display: block;
+    color: var(--muted);
+    font-family: var(--fs-mono);
+    font-size: 8.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .org-node.lead {
+    background: linear-gradient(180deg, rgba(0, 246, 255, 0.14) 0%, rgba(0, 246, 255, 0.04) 100%);
+    border-color: rgba(0, 246, 255, 0.45);
+    color: var(--sea);
+    font-weight: 600;
+  }
+  .org-node.lead span {
+    color: rgba(0, 246, 255, 0.7);
+  }
+  .org-rule {
+    width: 1px;
+    height: 12px;
+    background: var(--line-hi);
+  }
+
   /* ── Medallion flow bar (slide 9) ──────────────────────────────────────── */
   .flow-bar {
     display: flex;
@@ -1421,7 +1478,7 @@
     <div class="item"><span class="num">20</span>MVP / Thin-Slice Strategy</div>
     <div class="item"><span class="num">21</span>Delivery Approach</div>
     <div class="item"><span class="num">22</span>Roadmap &amp; Critical Path</div>
-    <div class="item"><span class="num">23</span>Team &amp; Resource Plan</div>
+    <div class="item"><span class="num">23</span>Team · Resources · Key Personnel</div>
     <div class="item"><span class="num">24</span>Risk Management</div>
     <div class="item"><span class="num">25</span>ROM Financial Proposal</div>
     <div class="item"><span class="num">26</span>Assumptions &amp; Dependencies</div>
@@ -2227,22 +2284,49 @@ Exit: 0</pre>
 
 <!-- ═══ SLIDE 18: Team ═══ -->
 <section>
-  <h2>Team Structure — Central Europe, Offshore</h2>
-  <div class="content-center">
-    <table class="small">
-      <tr><th>Role</th><th>Seniority</th><th>Focus</th></tr>
-      <tr><td>Delivery Manager</td><td>Senior</td><td>Governance · risk · client comms · scrum master</td></tr>
-      <tr><td>Solution Architect</td><td>Lead</td><td>Technical design · ADRs · data modeling · spatial strategy</td></tr>
-      <tr><td>Platform / DevOps Engineer</td><td>Senior</td><td>Terraform · GitHub Actions · AWS infra · security hardening</td></tr>
-      <tr><td>Data Engineer 1</td><td>Senior</td><td>Python · <code>edp_common</code> · reference pipeline · patterns</td></tr>
-      <tr><td>Data Engineer 2</td><td>Mid</td><td>Pipeline development · DQ suite authoring</td></tr>
-      <tr><td>Full-Stack Developer</td><td>Senior</td><td>React dashboard · FastAPI · Cognito auth</td></tr>
-      <tr><td>QA Engineer</td><td>Senior</td><td>Test automation · E2E · UAT coordination</td></tr>
-      <tr><td>Technical Writer</td><td>Mid</td><td>Documentation · training materials · runbooks</td></tr>
-    </table>
-  </div>
-  <div class="slide-footer">
-    <p><strong class="sea">Peak team</strong> — 7 people (Wk 5-12) · <strong class="mint">AI augmentation</strong> — each role paired with Claude Code (30-50% productivity gain).</p>
+  <h2>Team Structure &amp; Org Chart</h2>
+  <p class="slide-sub">Per RFP §10.2a · Central Europe offshore · peak 7 FTE (Wk 5-12) · each role paired with Claude Code (30-50% productivity gain)</p>
+  <div class="two-col">
+    <div class="card">
+      <h3>Organization chart</h3>
+      <div class="card-content">
+        <div class="orgchart">
+          <div class="org-tier tier-1">
+            <div class="org-node lead">Delivery Manager<br><span>Senior · client-facing lead</span></div>
+          </div>
+          <div class="org-rule"></div>
+          <div class="org-tier tier-2">
+            <div class="org-node"><strong>Solution Architect</strong><br><span>Lead · tech design + ADRs</span></div>
+          </div>
+          <div class="org-rule"></div>
+          <div class="org-tier tier-3">
+            <div class="org-node"><strong>Platform / DevOps Eng</strong><br><span>Senior</span></div>
+            <div class="org-node"><strong>Data Eng 1</strong><br><span>Senior</span></div>
+            <div class="org-node"><strong>Data Eng 2</strong><br><span>Mid · Wk 3-12</span></div>
+            <div class="org-node"><strong>Full-Stack Dev</strong><br><span>Senior · Wk 5-16</span></div>
+            <div class="org-node"><strong>QA Engineer</strong><br><span>Senior · Wk 5-16</span></div>
+            <div class="org-node"><strong>Tech Writer</strong><br><span>Mid · Wk 13-16</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Role focus &amp; reporting</h3>
+      <div class="card-content">
+        <table class="tiny">
+          <tr><th>Role</th><th>Focus</th></tr>
+          <tr><td><strong>DM</strong></td><td>Governance · risk · client comms · scrum master</td></tr>
+          <tr><td><strong>SA</strong></td><td>Technical design · ADRs · data modeling · spatial strategy</td></tr>
+          <tr><td><strong>PE</strong></td><td>Terraform · GitHub Actions · AWS infra · hardening</td></tr>
+          <tr><td><strong>DE-1</strong></td><td>Python · <code>edp_common</code> · reference pipeline</td></tr>
+          <tr><td><strong>DE-2</strong></td><td>Pipeline development · DQ suite authoring</td></tr>
+          <tr><td><strong>FS</strong></td><td>React dashboard · FastAPI · Cognito</td></tr>
+          <tr><td><strong>QA</strong></td><td>Test automation · E2E · UAT</td></tr>
+          <tr><td><strong>TW</strong></td><td>Documentation · training · runbooks</td></tr>
+        </table>
+        <p class="muted" style="margin-top:10px;">All roles report to DM for delivery cadence · technical escalation to SA · client escalation via DM → Exec Sponsor.</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -2284,6 +2368,59 @@ Exit: 0</pre>
   </div>
   <div class="slide-footer">
     <p><strong class="sea">Peak</strong> 7 people (Wk 5-12) · <strong class="mint">Rate card:</strong> EPAM &amp; CAPG Central Europe · full reconciliation in <a href="https://github.com/AKharytonchyk/assessment-rfp/blob/main/docs/delivery/wbs.md" target="_blank" rel="noopener"><code>docs/delivery/wbs.md</code></a></p>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 20b: Key Personnel (RFP §10.2b) ═══ -->
+<section>
+  <h2>Key Personnel</h2>
+  <p class="slide-sub">Per RFP §10.2b — leadership + senior technical roles · full CVs available on request</p>
+  <div class="three-col" style="margin-top:8px;">
+    <div class="card">
+      <h3>Delivery Manager</h3>
+      <div class="card-content">
+        <h4 class="mint">Artsiom Kharytonchyk</h4>
+        <p class="muted" style="font-size:12px; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:8px;">DM3+ · Senior</p>
+        <ul>
+          <li>10+ yrs delivery management across data platforms, AWS cloud, cloud-native application programs</li>
+          <li><strong>AWS certified</strong> · Agile / Scrum practitioner</li>
+          <li>Domains: FinTech · Automotive · Data &amp; Analytics · GitHub engineering systems</li>
+          <li>Led cross-functional programs with BE / FE / mobile / IoT teams — broad engineering perspective on data platforms</li>
+          <li>Primary client contact · governance · risk management</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Solution Architect · Lead</h3>
+      <div class="card-content">
+        <h4 class="mint">[Name — assigned at kickoff]</h4>
+        <p class="muted" style="font-size:12px; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:8px;">EPAM Lead Architect</p>
+        <ul>
+          <li>12+ yrs data architecture · AWS Solutions Architect <strong>Professional</strong></li>
+          <li>Expertise: Glue · Lake Formation · Iceberg · Redshift · Step Functions</li>
+          <li>Led 3+ enterprise data-lake migrations on AWS Medallion</li>
+          <li>ADR ownership · cross-domain data modeling · spatial architecture</li>
+          <li>Rolls off Wk 14 with 50% cover Wk 15-16 for DOC-008 sign-off</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Lead Data Engineer</h3>
+      <div class="card-content">
+        <h4 class="mint">[Name — assigned at kickoff]</h4>
+        <p class="muted" style="font-size:12px; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:8px;">Senior</p>
+        <ul>
+          <li>8+ yrs Python / PySpark data engineering</li>
+          <li>AWS <strong>Data Analytics Specialty</strong> certified</li>
+          <li>Expertise: Glue, Great Expectations, Iceberg, ETL patterns</li>
+          <li>Owns <code>edp_common</code> library + reference pipeline</li>
+          <li>Mentors DE-2 (mid-level) on pipeline patterns</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <p><strong class="sea">Full CVs + additional personnel</strong> (Platform Eng, Full-Stack Dev, QA Eng, Data Eng 2, Tech Writer) available on request. Bench succession: 1-2 week replacement SLA with equivalent seniority (R6 mitigation).</p>
   </div>
 </section>
 
