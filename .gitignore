@@ -18,3 +18,9 @@ RFP_*.docx
 node_modules/
 dist/
 .cache/
+
+# Personal study / defense notes (stay local, not for public repo)
+BRIEFING.md
+STUDY_NOTES.md
+NOTES.md
+_private*.md
