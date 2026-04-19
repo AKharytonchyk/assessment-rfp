@@ -1,0 +1,17 @@
+{
+  "name": "edp-rfp-exports",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Headless export of the reveal.js deck to PDF + PPTX",
+  "scripts": {
+    "install-browser": "playwright install chromium",
+    "export": "node export.mjs",
+    "pdf": "node export.mjs --pdf-only",
+    "pptx": "node export.mjs --pptx-only"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0",
+    "pptxgenjs": "^3.12.0"
+  }
+}

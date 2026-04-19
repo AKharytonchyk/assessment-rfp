@@ -19,6 +19,9 @@ node_modules/
 dist/
 .cache/
 
+# Exported artifacts from scripts/export.mjs (regenerate locally)
+exports/
+
 # Personal study / defense notes (stay local, not for public repo)
 BRIEFING.md
 STUDY_NOTES.md
