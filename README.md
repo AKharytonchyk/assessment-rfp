@@ -6,7 +6,7 @@ Enterprise Data Platform — RFP response package. Domain-centric lakehouse on A
 
 **Live presentation** — [**akharytonchyk.github.io/assessment-rfp**](https://akharytonchyk.github.io/assessment-rfp/)
 
-reveal.js · EPAM dark palette · 40 slides + Appendix B
+reveal.js · EPAM dark palette · **40 slides** (incl. Appendix B · ~20 min talk)
 
 Navigation: arrow keys · `Esc`/`O` overview · `F` fullscreen · `.` pause. Click any C4 diagram to expand.
 
@@ -31,11 +31,11 @@ Tag [`v1.0-assessment`](https://github.com/AKharytonchyk/assessment-rfp/tree/v1.
 
 | Area | Content |
 |---|---|
-| [`index.html`](./index.html) | Reveal.js presentation source — 40 slides + Appendix B |
-| [`exports/`](./scripts/README.md) | PDF + PPTX (gitignored, regenerate via `scripts/`) |
-| [`scripts/`](./scripts/) | Playwright + pptxgenjs export tooling |
+| [`index.html`](./index.html) | Reveal.js presentation source — 40 slides total (incl. Appendix B) |
+| `exports/` | PDF + PPTX artifacts — gitignored, regenerated locally via [scripts](./scripts/README.md) |
+| [`scripts/`](./scripts/) | Playwright + pptxgenjs export tooling (PDF + PPTX) |
 | [`docs/slides/slide-content.md`](./docs/slides/slide-content.md) | Slide-by-slide narrative with speaker notes (source of truth) |
-| [`docs/architecture/`](./docs/architecture/) | NFR/SLO matrix · C4 L3 · data-contract CI gate · domain health score · Mermaid diagrams |
+| [`docs/architecture/`](./docs/architecture/) | NFR/SLO matrix · data-contract CI gate · domain health score · Mermaid diagrams (c4-context, cicd-flow, medallion, observability, roadmap, etc.) |
 | [`docs/architecture/adr/`](./docs/architecture/adr/) | **14 ADRs** in MADR format — cloud, Iceberg, CDC, schema contracts, DR, DQ, orchestration, lineage, catalog, geospatial, access control, MDM, data observability, retention |
 | [`docs/architecture/c4/`](./docs/architecture/c4/) | C4 diagrams — PUML source + rendered PNG (context, container, component) |
 | [`docs/delivery/`](./docs/delivery/) | WBS · ROM · resource plan · delivery approach · RACI · pipeline prioritization · adoption plan |
@@ -49,8 +49,8 @@ Tag [`v1.0-assessment`](https://github.com/AKharytonchyk/assessment-rfp/tree/v1.
 ### 🏛️ Solution Architect
 - [14 ADRs index](./docs/architecture/adr/README.md)
 - [NFR / SLO matrix](./docs/architecture/nfr-slo-matrix.md)
-- [C4 diagrams (PUML + PNG)](./docs/architecture/c4/) · [C4 L3 reference pipeline](./docs/architecture/c4/c4-component-pipeline.puml)
-- [Architecture diagrams (Mermaid)](./docs/architecture/)
+- [C4 diagrams (PUML + PNG)](./docs/architecture/c4/) · [Reference pipeline (C4 Component)](./docs/architecture/c4/c4-component-pipeline.puml)
+- [Architecture overview (all diagrams + artifacts)](./docs/architecture/)
 
 ### 🎯 Product Manager
 - [Pipeline prioritization framework](./docs/delivery/pipeline-prioritization.md)
@@ -147,4 +147,5 @@ git push origin v1.0-assessment
 - **C4-PlantUML** on PlantUML — GPL
 - **Graphviz** — EPL
 - **Playwright + pptxgenjs** (export tooling) — Apache-2.0 / MIT
-- EPAM dark palette — template from `../reveal-epam-template/`
+- **Fraunces · Hanken Grotesk · JetBrains Mono** — SIL Open Font License
+- EPAM dark palette — adapted from EPAM's internal reveal.js dark-mode template
